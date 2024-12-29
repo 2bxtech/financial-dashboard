@@ -8,6 +8,7 @@ describe('FileUploader', () => {
   beforeEach(() => {
     defaultProps = {
       onFileUpload: jest.fn(),
+      onError: jest.fn(), // Add this line
       loading: false,
       error: '',
     };

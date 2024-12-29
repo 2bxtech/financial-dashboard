@@ -8,6 +8,7 @@ import HealthMetrics from './health-metrics';
 import TrendMetrics from './trend-metrics';
 import RevenueChart from './revenue-chart';
 import ProfitChart from './profit-chart';
+import { validateData, validateHeaders } from '@/utils/validation-utils';
 
 const FinancialApp: React.FC = () => {
   const [fileData, setFileData] = useState<FinancialData | null>(null);
@@ -43,6 +44,20 @@ const FinancialApp: React.FC = () => {
   const handleParseComplete = (results: Papa.ParseResult<Record<string, any>>) => {
     if (results.errors.length > 0) {
       setError(`Parse errors: ${results.errors.map(e => e.message).join(', ')}`);
+      return;
+    }
+
+    // Validate headers
+    const headerValidation = validateHeaders(results.meta.fields || []);
+    if (!headerValidation.isValid) {
+      setError(headerValidation.error || 'Invalid headers');
+      return;
+    }
+
+    // Validate data
+    const dataValidation = validateData(results.data);
+    if (!dataValidation.isValid) {
+      setError(dataValidation.error || 'Invalid data');
       return;
     }
 
@@ -151,7 +166,12 @@ const FinancialApp: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <FileUploader onFileUpload={processFile} loading={loading} error={error} />
+<FileUploader 
+        onFileUpload={processFile} 
+        onError={setError}
+        loading={loading} 
+        error={error} 
+      />
       <DataPreview data={fileData} />
       {chartData && (
         <>
