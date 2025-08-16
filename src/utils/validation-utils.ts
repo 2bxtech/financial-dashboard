@@ -9,7 +9,6 @@ export interface ValidationResult {
 }
 
 export const validateFile = (file: File): ValidationResult => {
-    const FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
     const ALLOWED_TYPES = ['.csv', '.xlsx', '.xls'];
    
     if (file.size > FILE_SIZE_LIMIT) {
