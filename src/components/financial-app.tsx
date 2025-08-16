@@ -1,23 +1,44 @@
-import React, { useState } from 'react';
-import Papa from 'papaparse';
-import ExcelJS from 'exceljs';
-import { FinancialData, HealthMetricsData, TrendMetricsData, ChartDataPoint } from '../types';
+import React, { useState, useEffect } from 'react';
+import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import FileUploader from './file-uploader';
 import DataPreview from './data-preview';
-import HealthMetrics from './health-metrics';
 import TrendMetrics from './trend-metrics';
 import RevenueChart from './revenue-chart';
 import ProfitChart from './profit-chart';
-import { validateData, validateHeaders } from '@/utils/validation-utils';
+import ErrorDisplay from './error-display';
+import LoadingState from './loading-state';
+import { fileProcessingService } from '../services/file-processing.service';
+import { AppError, ErrorHandler } from '../utils/error-handling';
+import { CircuitState } from '../utils/circuit-breaker';
 
 const FinancialApp: React.FC = () => {
   const [fileData, setFileData] = useState<FinancialData | null>(null);
   const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<AppError | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [trends, setTrends] = useState<TrendMetricsData | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [circuitBreakerState, setCircuitBreakerState] = useState<CircuitState>(CircuitState.CLOSED);
 
-  const calculateGrowthMetrics = (data: ChartDataPoint[]) => {
+  // Subscribe to error events
+  useEffect(() => {
+    const unsubscribe = ErrorHandler.subscribe((appError: AppError) => {
+      setError(appError);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Update circuit breaker state periodically
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCircuitBreakerState(fileProcessingService.getCircuitBreakerState() as CircuitState);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const calculateGrowthMetrics = (data: ChartDataPoint[]): TrendMetricsData => {
     if (data.length < 2) return { revenueGrowth: 0, profitGrowth: 0, marginGrowth: 0 };
 
     const latest = data[data.length - 1] ?? {};
@@ -41,138 +62,93 @@ const FinancialApp: React.FC = () => {
     };
   };
 
-  const handleParseComplete = (results: Papa.ParseResult<Record<string, any>>) => {
-    if (results.errors.length > 0) {
-      setError(`Parse errors: ${results.errors.map(e => e.message).join(', ')}`);
-      return;
-    }
-
-    // Validate headers
-    const headerValidation = validateHeaders(results.meta.fields || []);
-    if (!headerValidation.isValid) {
-      setError(headerValidation.error || 'Invalid headers');
-      return;
-    }
-
-    // Validate data
-    const dataValidation = validateData(results.data);
-    if (!dataValidation.isValid) {
-      setError(dataValidation.error || 'Invalid data');
-      return;
-    }
-
-    const processedData: FinancialData = {
-      headers: results.meta.fields || [],
-      rows: results.data.slice(0, 5),
-      totalRows: results.data.length
-    };
-
-    const chartPoints: ChartDataPoint[] = results.data.map(row => {
-      const revenue = Number(row.Revenue || row.revenue || 0);
-      const expenses = Number(row.Expenses || row.expenses || 0);
-      const profit = revenue - expenses;
-      const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
-
-      let date = row.Date || row.date || 'N/A';
-
-      if (typeof date === 'string') {
-        date = date.includes('-') ? date : `${date.slice(0, 4)}-${date.slice(4)}`;
-      } else if (typeof date === 'number') {
-        const excelDate = new Date(Date.UTC(0, 0, date - 1));
-        date = excelDate.toISOString().slice(0, 7);
-      } else if (date instanceof Date) {
-        date = date.toISOString().slice(0, 7);
-      } else {
-        date = 'Invalid Date';
-      }
-
-      return {
-        Date: date,
-        Revenue: revenue,
-        Expenses: expenses,
-        profitMargin: Number(profitMargin.toFixed(2))
-      };
-    });
-
-    const calculatedTrends = calculateGrowthMetrics(chartPoints);
-
-    setFileData(processedData);
-    setChartData(chartPoints);
-    setTrends(calculatedTrends);
-  };
-
   const processFile = async (file: File) => {
     setLoading(true);
-    setError('');
+    setError(null);
     setFileData(null);
     setChartData(null);
     setTrends(null);
+    setWarnings([]);
 
-    const fileType = file.name.split('.').pop()?.toLowerCase() || '';
+    try {
+      const result = await fileProcessingService.processFile(file);
+      
+      const calculatedTrends = calculateGrowthMetrics(result.chartData);
 
-    if (fileType === 'csv') {
-      Papa.parse<Record<string, any>>(file, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          handleParseComplete(results);
-          setLoading(false);
-        },
-        error: () => {
-          setError('Error parsing CSV file.');
-          setLoading(false);
-        }
+      setFileData(result.data);
+      setChartData(result.chartData);
+      setTrends(calculatedTrends);
+      setWarnings(result.warnings);
+
+      // Log success metrics
+      console.log('File processed successfully:', {
+        processingTime: result.processingTime,
+        warnings: result.warnings.length,
+        rows: result.data.totalRows
       });
-    } else if (['xlsx', 'xls'].includes(fileType)) {
-      try {
-        const workbook = new ExcelJS.Workbook();
-        const buffer = await file.arrayBuffer();
-        await workbook.xlsx.load(buffer);
 
-        const worksheet = workbook.worksheets[0];
-        const headers: string[] = [];
-        const rows: Record<string, any>[] = [];
-
-        worksheet.getRow(1).eachCell((cell) => {
-          headers.push(cell.text);
-        });
-
-        worksheet.eachRow((row, rowNumber) => {
-          if (rowNumber === 1) return;
-          const rowData: Record<string, any> = {};
-
-          row.eachCell((cell, colNumber) => {
-            const header = headers[colNumber - 1];
-            rowData[header] = cell.value;
-          });
-
-          rows.push(rowData);
-        });
-
-        handleParseComplete({
-          data: rows,
-          errors: [],
-          meta: { fields: headers, delimiter: ",", linebreak: "\n", aborted: false, truncated: false, cursor: 0 }
-        });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        setError('Error parsing Excel file: ' + errorMessage);
-      } finally {
-        setLoading(false);
+    } catch (err) {
+      if (err instanceof AppError) {
+        setError(err);
+      } else {
+        const appError = ErrorHandler.handle(err);
+        setError(appError);
       }
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    setError(null);
+    // You could store the last file and retry it here
+  };
+
+  const handleDismissError = () => {
+    setError(null);
+  };
+
+  const handleFileUploaderError = (errorMessage: string) => {
+    const appError = ErrorHandler.handle(new Error(errorMessage));
+    setError(appError);
   };
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-<FileUploader 
+      <FileUploader 
         onFileUpload={processFile} 
-        onError={setError}
+        onError={handleFileUploaderError}
         loading={loading} 
-        error={error} 
+        error={error?.userMessage || ''} 
       />
+      
+      <LoadingState 
+        loading={loading}
+        message="Processing your financial data..."
+        circuitBreakerState={circuitBreakerState}
+        showCircuitStatus={true}
+      />
+
+      <ErrorDisplay 
+        error={error}
+        onRetry={error?.recoverable ? handleRetry : undefined}
+        onDismiss={handleDismissError}
+        showDetails={process.env.NODE_ENV === 'development'}
+      />
+
+      {warnings.length > 0 && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
+          <h4 className="font-medium text-yellow-800">Processing Warnings:</h4>
+          <ul className="mt-2 text-sm text-yellow-700">
+            {warnings.map((warning, index) => (
+              <li key={index}>• {warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <DataPreview data={fileData} />
+      
       {chartData && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

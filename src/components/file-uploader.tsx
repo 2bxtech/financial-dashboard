@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { validateFile } from '../utils/validation-utils';
 
 export interface FileUploaderProps {
@@ -60,12 +59,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, onError, load
           </div>
         )}
 
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        {/* Error handling is now done by parent component via ErrorDisplay */}
       </CardContent>
     </Card>
   );
