@@ -214,7 +214,7 @@ export class DataProcessingService implements IDataProcessingService {
       }
     } else if (typeof value === 'number') {
       // Handle Excel date numbers
-      const excelDate = new Date(Date.UTC(0, 0, value - 1));
+      const excelDate = new Date((value - 25569) * 86400 * 1000);
       return excelDate.toISOString().slice(0, 7);
     } else if (value instanceof Date) {
       return value.toISOString().slice(0, 7);
