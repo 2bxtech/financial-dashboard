@@ -92,5 +92,4 @@ export const validateData = (data: any[]): ValidationResult => {
     }
   }
 
-  return { isValid: true };
 };
