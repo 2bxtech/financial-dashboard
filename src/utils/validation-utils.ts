@@ -26,7 +26,7 @@ export const validateFile = (file: File): ValidationResult => {
     }
    
     return { isValid: true };
-   };
+};
 
 export const validateHeaders = (headers: string[]): ValidationResult => {
   const requiredHeaders = ['Date', 'Revenue', 'Expenses'];
