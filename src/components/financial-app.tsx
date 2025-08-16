@@ -33,7 +33,14 @@ const FinancialApp: React.FC = () => {
   // Update circuit breaker state periodically
   useEffect(() => {
     const interval = setInterval(() => {
-      setCircuitBreakerState(fileProcessingService.getCircuitBreakerState() as CircuitState);
+      const state = fileProcessingService.getCircuitBreakerState();
+      if (isCircuitState(state)) {
+        setCircuitBreakerState(state);
+      } else {
+        // Optionally handle invalid state, e.g. set to CLOSED or log an error
+        setCircuitBreakerState(CircuitState.CLOSED);
+        console.warn('Invalid circuit breaker state:', state);
+      }
     }, 1000);
 
     return () => clearInterval(interval);
