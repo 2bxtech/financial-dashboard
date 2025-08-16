@@ -75,6 +75,7 @@ class FileProcessingService {
       // Mark successful processing in data service
       dataProcessingService.markProcessingSuccess();
       
+      dataProcessingService.markProcessingSuccess();
       return {
         ...result,
         processingTime
