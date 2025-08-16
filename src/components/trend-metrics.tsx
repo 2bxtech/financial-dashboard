@@ -23,9 +23,9 @@ const TrendIndicator: React.FC<IndicatorProps> = ({
         <CardTitle className="flex items-center justify-between">
           {title}
           {isGood ? (
-            <TrendingUp className="h-5 w-5 text-green-500" />
+            <TrendingUp className="h-5 w-5 text-green-500" data-testid="trending-up-icon" />
           ) : (
-            <TrendingDown className="h-5 w-5 text-red-500" />
+            <TrendingDown className="h-5 w-5 text-red-500" data-testid="trending-down-icon" />
           )}
         </CardTitle>
       </CardHeader>

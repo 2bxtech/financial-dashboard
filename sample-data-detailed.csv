@@ -1,0 +1,61 @@
+Date,Revenue,Expenses,Department,Region,Product Category
+2024-01,120000,85000,Sales,North America,Software
+2024-01,45000,32000,Marketing,North America,Services
+2024-01,28000,19000,Support,Europe,Software
+2024-02,135000,92000,Sales,North America,Software
+2024-02,48000,34000,Marketing,North America,Services
+2024-02,31000,21000,Support,Europe,Software
+2024-03,128000,88000,Sales,North America,Software
+2024-03,42000,30000,Marketing,Asia Pacific,Services
+2024-03,35000,23000,Support,Europe,Software
+2024-04,142000,95000,Sales,North America,Software
+2024-04,52000,36000,Marketing,Asia Pacific,Services
+2024-04,38000,25000,Support,Europe,Software
+2024-05,156000,102000,Sales,North America,Software
+2024-05,55000,38000,Marketing,Asia Pacific,Services
+2024-05,41000,27000,Support,Europe,Software
+2024-06,148000,98000,Sales,North America,Software
+2024-06,49000,35000,Marketing,North America,Services
+2024-06,43000,28000,Support,Europe,Software
+2024-07,165000,108000,Sales,North America,Software
+2024-07,58000,40000,Marketing,Asia Pacific,Services
+2024-07,45000,30000,Support,Europe,Software
+2024-08,172000,112000,Sales,North America,Software
+2024-08,61000,42000,Marketing,Asia Pacific,Services
+2024-08,48000,32000,Support,Europe,Software
+2024-09,158000,105000,Sales,North America,Software
+2024-09,54000,38000,Marketing,North America,Services
+2024-09,46000,31000,Support,Europe,Software
+2024-10,175000,115000,Sales,North America,Software
+2024-10,65000,44000,Marketing,Asia Pacific,Services
+2024-10,52000,34000,Support,Europe,Software
+2024-11,188000,122000,Sales,North America,Software
+2024-11,68000,46000,Marketing,Asia Pacific,Services
+2024-11,55000,36000,Support,Europe,Software
+2024-12,195000,125000,Sales,North America,Software
+2024-12,72000,48000,Marketing,North America,Services
+2024-12,58000,38000,Support,Europe,Software
+2025-01,125000,87000,Sales,North America,Software
+2025-01,48000,34000,Marketing,North America,Services
+2025-01,32000,22000,Support,Europe,Software
+2025-02,138000,94000,Sales,North America,Software
+2025-02,52000,36000,Marketing,Asia Pacific,Services
+2025-02,35000,24000,Support,Europe,Software
+2025-03,145000,97000,Sales,North America,Software
+2025-03,56000,38000,Marketing,Asia Pacific,Services
+2025-03,38000,25000,Support,Europe,Software
+2025-04,152000,101000,Sales,North America,Software
+2025-04,59000,40000,Marketing,Asia Pacific,Services
+2025-04,42000,28000,Support,Europe,Software
+2025-05,168000,110000,Sales,North America,Software
+2025-05,63000,42000,Marketing,North America,Services
+2025-05,45000,30000,Support,Europe,Software
+2025-06,162000,106000,Sales,North America,Software
+2025-06,58000,40000,Marketing,Asia Pacific,Services
+2025-06,48000,32000,Support,Europe,Software
+2025-07,178000,116000,Sales,North America,Software
+2025-07,68000,46000,Marketing,Asia Pacific,Services
+2025-07,52000,34000,Support,Europe,Software
+2025-08,185000,119000,Sales,North America,Software
+2025-08,72000,48000,Marketing,North America,Services
+2025-08,55000,36000,Support,Europe,Software

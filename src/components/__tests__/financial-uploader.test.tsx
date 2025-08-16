@@ -8,6 +8,7 @@ describe('FileUploader', () => {
   beforeEach(() => {
     defaultProps = {
       onFileUpload: jest.fn(),
+      onError: jest.fn(), // Add this line
       loading: false,
       error: '',
     };
@@ -21,11 +22,12 @@ describe('FileUploader', () => {
     expect(defaultProps.onFileUpload).toHaveBeenCalledWith(mockFile);
   });
 
-  it('displays an error message if error prop is set', () => {
-    const { queryByText, rerender } = render(<FileUploader {...defaultProps} error="" />);
+  it('does not display error directly (handled by parent)', () => {
+    const { queryByText } = render(<FileUploader {...defaultProps} error="" />);
     expect(queryByText(/Error/i)).toBeNull();
-    rerender(<FileUploader {...defaultProps} error="Something went wrong" />);
-    expect(queryByText(/Something went wrong/i)).not.toBeNull();
+    // Error display is now handled by ErrorDisplay component in parent
+    const withError = render(<FileUploader {...defaultProps} error="Something went wrong" />);
+    expect(withError.queryByText(/Something went wrong/i)).toBeNull();
   });
 
   it('displays loading state when loading is true', () => {

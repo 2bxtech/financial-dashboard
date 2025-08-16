@@ -18,7 +18,7 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data }) => {
         <CardTitle>Revenue vs Expenses Trend</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-96">
+      <div className="h-96" data-testid="revenue-chart">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={sortedData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />

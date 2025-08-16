@@ -1,24 +1,33 @@
 import React, { useRef } from 'react';
 import { Upload } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { validateFile } from '../utils/validation-utils';
 
 export interface FileUploaderProps {
   onFileUpload: (file: File) => void;
+  onError: (error: string) => void;
   loading: boolean;
   error: string;
 }
 
-const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, loading, error }) => {
+const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, onError, loading, error }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDrop = (e: React.DragEvent<HTMLLabelElement> | React.ChangeEvent<HTMLInputElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLLabelElement> | React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const file = 'dataTransfer' in e 
       ? e.dataTransfer?.files[0]
       : e.target?.files?.[0];
       
-    if (file) onFileUpload(file);
+    if (!file) return;
+
+    const validation = validateFile(file);
+    if (!validation.isValid) {
+      onError(validation.error || 'Invalid file');
+      return;
+    }
+
+    onFileUpload(file);
   };
 
   return (
@@ -50,12 +59,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, loading, erro
           </div>
         )}
 
-        {error && (
-          <Alert variant="destructive" className="mt-4">
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
+        {/* Error handling is now done by parent component via ErrorDisplay */}
       </CardContent>
     </Card>
   );
