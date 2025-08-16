@@ -69,4 +69,28 @@ export const validateData = (data: any[]): ValidationResult => {
     }
   
     return { isValid: true };
-  };
+  if (!Array.isArray(data) || data.length === 0) {
+    return { isValid: false, error: 'Data must be a non-empty array' };
+  }
+
+  const dateRegex = /^\d{4}-\d{2}$/;
+  
+  for (const row of data) {
+    if (!dateRegex.test(row.Date?.toString())) {
+      return { isValid: false, error: 'Invalid date format' };
+    }
+    
+    if (!row.Revenue || !row.Expenses) {
+      return { isValid: false, error: 'Missing required fields' };
+    }
+
+    const revenue = Number(row.Revenue);
+    const expenses = Number(row.Expenses);
+    
+    if (isNaN(revenue) || isNaN(expenses) || revenue < 0 || expenses < 0) {
+      return { isValid: false, error: 'Invalid numeric values' };
+    }
+  }
+
+  return { isValid: true };
+};
