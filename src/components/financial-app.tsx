@@ -88,7 +88,6 @@ const FinancialApp: React.FC = () => {
 
   const handleRetry = () => {
     setError(null);
-    // You could store the last file and retry it here
   };
 
   const handleDismissError = () => {

@@ -5,7 +5,6 @@
 
 import { 
   IDataProcessingService, 
-  ProcessedFinancialData, 
   FinancialMetrics 
 } from './interfaces/IDataProcessingService';
 import { FinancialData, ChartDataPoint, TrendMetricsData } from '../types';
@@ -18,30 +17,6 @@ export class DataProcessingService implements IDataProcessingService {
     totalProcessingTime: 0,
     successfulProcessing: 0
   };
-
-  async processFile(file: File): Promise<ProcessedFinancialData> {
-    const startTime = Date.now();
-    
-    try {
-      this.processingStats.totalFilesProcessed++;
-      
-      // This method focuses purely on data processing logic
-      // File parsing is handled by the existing file-processing.service
-      throw new AppError(
-        'Direct file processing should use FileProcessingService',
-        ErrorType.VALIDATION_ERROR,
-        ErrorSeverity.MEDIUM,
-        true,
-        'Use FileProcessingService.processFile() for file operations'
-      );
-      
-    } catch (error) {
-      throw error;
-    } finally {
-      const processingTime = Date.now() - startTime;
-      this.processingStats.totalProcessingTime += processingTime;
-    }
-  }
 
   validateData(data: unknown[]): ValidationResult {
     try {

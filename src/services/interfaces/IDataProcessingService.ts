@@ -6,13 +6,6 @@
 import { FinancialData, ChartDataPoint, TrendMetricsData } from '../../types';
 import { ValidationResult } from '../../utils/validation-utils';
 
-export interface ProcessedFinancialData {
-  data: FinancialData;
-  chartData: ChartDataPoint[];
-  processingTime: number;
-  warnings: string[];
-}
-
 export interface FinancialMetrics {
   trends: TrendMetricsData;
   summaryStats: {
@@ -29,11 +22,6 @@ export interface FinancialMetrics {
 }
 
 export interface IDataProcessingService {
-  /**
-   * Process a file and extract financial data
-   */
-  processFile(file: File): Promise<ProcessedFinancialData>;
-  
   /**
    * Validate raw data array
    */
