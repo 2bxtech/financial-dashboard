@@ -238,5 +238,5 @@ export async function withRetry<T>(
     }
   }
 
-  throw lastError!;
+  throw lastError ?? new Error('Operation failed after all retry attempts, but no error was captured.');
 }
