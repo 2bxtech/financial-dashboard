@@ -1,20 +1,30 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FinancialApp from '../financial-app';
-import Papa, { ParseLocalConfig, ParseResult } from 'papaparse';
+import { fileProcessingService } from '../../services/file-processing.service';
+import { AppError, ErrorType } from '../../utils/error-handling';
 
-// Mock 'papaparse' to avoid real parsing
-jest.mock('papaparse', () => ({
-  parse: jest.fn(),
+// Mock the file processing service
+jest.mock('../../services/file-processing.service', () => ({
+  fileProcessingService: {
+    processFile: jest.fn(),
+    getCircuitBreakerState: jest.fn(() => 'CLOSED'),
+    getMetrics: jest.fn(() => ({
+      totalFilesProcessed: 0,
+      successfulProcessing: 0,
+      failedProcessing: 0,
+      averageProcessingTime: 0,
+      circuitBreakerMetrics: null
+    }))
+  }
 }));
 
-const parseMock = Papa.parse as unknown as jest.MockedFunction<
-  (input: File, config: ParseLocalConfig<Record<string, any>, File>) => void
->;
+const mockFileProcessingService = fileProcessingService as jest.Mocked<typeof fileProcessingService>;
 
 describe('FinancialApp (CSV flow only)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockFileProcessingService.getCircuitBreakerState.mockReturnValue('CLOSED');
   });
 
   // Mock container size to fix chart rendering issue
@@ -24,9 +34,10 @@ describe('FinancialApp (CSV flow only)', () => {
   };
 
   test('uploads and parses CSV file', async () => {
-    parseMock.mockImplementation((file, config) => {
-      const mockResults: ParseResult<Record<string, any>> = {
-        data: [
+    const mockResult = {
+      data: {
+        headers: ['Date', 'Revenue', 'Expenses', 'Profit'],
+        rows: [
           {
             Date: '2024-01',
             Revenue: '125000.5',
@@ -34,18 +45,21 @@ describe('FinancialApp (CSV flow only)', () => {
             Profit: '26500.25',
           },
         ],
-        errors: [],
-        meta: {
-          fields: ['Date', 'Revenue', 'Expenses', 'Profit'],
-          delimiter: ',',
-          linebreak: '\n',
-          aborted: false,
-          truncated: false,
-          cursor: 0,
-        },
-      };
-      config.complete?.(mockResults, file);
-    });
+        totalRows: 1
+      },
+      chartData: [
+        {
+          Date: '2024-01',
+          Revenue: 125000.5,
+          Expenses: 98500.25,
+          profitMargin: 21.2
+        }
+      ],
+      processingTime: 100,
+      warnings: []
+    };
+
+    mockFileProcessingService.processFile.mockResolvedValue(mockResult);
 
     render(
       <div data-testid="chart-container" className="chartContainer">
@@ -67,7 +81,7 @@ describe('FinancialApp (CSV flow only)', () => {
 
     fireEvent.change(fileInput!, { target: { files: [file] } });
 
-    // Wait for the data to appear without checking for loading state
+    // Wait for the data to appear
     await waitFor(() => {
       expect(screen.getByText('2024-01')).toBeInTheDocument();
     }, { timeout: 4000 });
@@ -79,28 +93,12 @@ describe('FinancialApp (CSV flow only)', () => {
   });
 
   test('shows CSV parse error', async () => {
-    parseMock.mockImplementation((file, config) => {
-      const mockResults: ParseResult<Record<string, any>> = {
-        data: [],
-        errors: [
-          {
-            type: 'Delimiter',
-            code: 'TooManyFields',
-            message: 'Fake CSV parse error',
-            row: 0,
-          },
-        ],
-        meta: {
-          fields: [],
-          delimiter: ',',
-          linebreak: '\n',
-          aborted: false,
-          truncated: false,
-          cursor: 0,
-        },
-      };
-      config.complete?.(mockResults, file);
-    });
+    const parseError = new AppError(
+      'CSV parsing failed: Fake CSV parse error',
+      ErrorType.PARSE_ERROR
+    );
+
+    mockFileProcessingService.processFile.mockRejectedValue(parseError);
 
     render(
       <div data-testid="chart-container" className="chartContainer">
@@ -119,7 +117,8 @@ describe('FinancialApp (CSV flow only)', () => {
     const file = new File([''], 'mock-error.csv', { type: 'text/csv' });
     fireEvent.change(fileInput!, { target: { files: [file] } });
 
-    expect(await screen.findByText(/parse errors:/i)).toBeInTheDocument();
-    expect(screen.getByText(/fake csv parse error/i)).toBeInTheDocument();
+    // Updated to match new error display format
+    expect(await screen.findByText(/Parse Error/i)).toBeInTheDocument();
+    expect(screen.getByText(/Failed to read the file contents/i)).toBeInTheDocument();
   });
 });
