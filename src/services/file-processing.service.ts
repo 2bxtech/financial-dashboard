@@ -1,13 +1,15 @@
 /**
- * Enhanced File Processing Service with Circuit Breaker and Error Handling
+ * Enhanced File Processing Service with Service Layer Architecture
+ * Now uses dependency injection and clean separation of concerns
  */
 
-import Papa from 'papaparse';
-import ExcelJS from 'exceljs';
 import { CircuitBreaker, CircuitBreakerConfig } from '../utils/circuit-breaker';
 import { AppError, ErrorType, ErrorSeverity, ErrorHandler, withRetry } from '../utils/error-handling';
 import { validateData, validateHeaders, validateFile } from '../utils/validation-utils';
 import { FinancialData, ChartDataPoint } from '../types';
+import { fileParserFactory } from './parsers/file-parser-factory';
+import { dataProcessingService } from './data-processing.service';
+import { IFileParser } from './interfaces/IFileParser';
 
 export interface ProcessedFileResult {
   data: FinancialData;
@@ -26,6 +28,7 @@ export interface FileProcessingMetrics {
 
 class FileProcessingService {
   private circuitBreaker: CircuitBreaker;
+  private parser: IFileParser | null = null;
   private metrics: FileProcessingMetrics = {
     totalFilesProcessed: 0,
     successfulProcessing: 0,
@@ -69,6 +72,9 @@ class FileProcessingService {
       const processingTime = Date.now() - startTime;
       this.updateMetrics(true, processingTime);
       
+      // Mark successful processing in data service
+      dataProcessingService.markProcessingSuccess();
+      
       return {
         ...result,
         processingTime
@@ -88,172 +94,57 @@ class FileProcessingService {
   }
 
   private async processFileInternal(file: File): Promise<Omit<ProcessedFileResult, 'processingTime'>> {
-    const fileType = file.name.split('.').pop()?.toLowerCase() || '';
     const warnings: string[] = [];
 
     try {
-      if (fileType === 'csv') {
-        return await this.processCSVFile(file, warnings);
-      } else if (['xlsx', 'xls'].includes(fileType)) {
-        return await this.processExcelFile(file, warnings);
-      } else {
-        throw new AppError(
-          `Unsupported file type: ${fileType}`,
-          ErrorType.VALIDATION_ERROR,
-          ErrorSeverity.MEDIUM,
-          true,
-          `File type "${fileType}" is not supported. Please use CSV, XLSX, or XLS files.`
-        );
+      // Get appropriate parser using factory pattern
+      this.parser = fileParserFactory.getParser(file);
+      
+      // Parse file using the selected parser
+      const parseResult = await withRetry(
+        () => this.parser!.parse(file),
+        { maxAttempts: 2, baseDelay: 500 }
+      );
+
+      // Collect parsing warnings
+      if (parseResult.errors.length > 0) {
+        const criticalErrors = parseResult.errors.filter(e => e.type === 'Delimiter');
+        if (criticalErrors.length > 0) {
+          throw new AppError(
+            `Critical parsing errors: ${criticalErrors.map(e => e.message).join(', ')}`,
+            ErrorType.PARSE_ERROR,
+            ErrorSeverity.HIGH
+          );
+        }
+        
+        // Add non-critical errors as warnings
+        warnings.push(...parseResult.errors.map(e => e.message));
       }
+
+      // Validate and process data using data processing service
+      return this.validateAndProcessData(parseResult, warnings);
+
     } catch (error) {
       if (error instanceof AppError) {
         throw error;
       }
       
       throw new AppError(
-        `Failed to process ${fileType.toUpperCase()} file: ${error instanceof Error ? error.message : String(error)}`,
+        `File processing failed: ${error instanceof Error ? error.message : String(error)}`,
         ErrorType.FILE_PROCESSING_ERROR,
         ErrorSeverity.HIGH,
-        true
+        true,
+        'Unable to process the file. Please check the file format and try again.'
       );
     }
   }
 
-  private async processCSVFile(file: File, warnings: string[]): Promise<Omit<ProcessedFileResult, 'processingTime'>> {
-    return new Promise((resolve, reject) => {
-      Papa.parse<Record<string, any>>(file, {
-        header: true,
-        dynamicTyping: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          try {
-            if (results.errors.length > 0) {
-              const errorMessages = results.errors.map(e => e.message);
-              warnings.push(...errorMessages);
-              
-              // If there are critical errors, reject
-              const criticalErrors = results.errors.filter(e => e.type === 'Delimiter');
-              if (criticalErrors.length > 0) {
-                throw new AppError(
-                  `CSV parsing failed: ${criticalErrors.map(e => e.message).join(', ')}`,
-                  ErrorType.PARSE_ERROR,
-                  ErrorSeverity.HIGH
-                );
-              }
-            }
-
-            const processed = this.validateAndProcessData(results, warnings);
-            resolve(processed);
-          } catch (error) {
-            reject(error);
-          }
-        },
-        error: (error) => {
-          reject(new AppError(
-            `CSV parsing error: ${error.message}`,
-            ErrorType.PARSE_ERROR,
-            ErrorSeverity.HIGH
-          ));
-        }
-      });
-    });
-  }
-
-  private async processExcelFile(file: File, warnings: string[]): Promise<Omit<ProcessedFileResult, 'processingTime'>> {
-    return await withRetry(async () => {
-      try {
-        const workbook = new ExcelJS.Workbook();
-        const buffer = await file.arrayBuffer();
-        await workbook.xlsx.load(buffer);
-
-        const worksheet = workbook.worksheets[0];
-        if (!worksheet) {
-          throw new AppError(
-            'Excel file contains no worksheets',
-            ErrorType.PARSE_ERROR,
-            ErrorSeverity.HIGH,
-            true,
-            'The Excel file appears to be empty or corrupted.'
-          );
-        }
-
-        const headers: string[] = [];
-        const rows: Record<string, any>[] = [];
-
-        // Extract headers
-        worksheet.getRow(1).eachCell((cell) => {
-          headers.push(cell.text || String(cell.value || ''));
-        });
-
-        if (headers.length === 0) {
-          throw new AppError(
-            'Excel file has no headers',
-            ErrorType.VALIDATION_ERROR,
-            ErrorSeverity.HIGH,
-            true,
-            'The Excel file must contain headers in the first row.'
-          );
-        }
-
-        // Extract data rows
-        worksheet.eachRow((row, rowNumber) => {
-          if (rowNumber === 1) return; // Skip header row
-          
-          const rowData: Record<string, any> = {};
-          let hasData = false;
-
-          row.eachCell((cell, colNumber) => {
-            const header = headers[colNumber - 1];
-            if (header) {
-              rowData[header] = cell.value;
-              if (cell.value !== null && cell.value !== undefined && cell.value !== '') {
-                hasData = true;
-              }
-            }
-          });
-
-          if (hasData) {
-            rows.push(rowData);
-          }
-        });
-
-        const mockResults = {
-          data: rows,
-          errors: [],
-          meta: { 
-            fields: headers, 
-            delimiter: ",", 
-            linebreak: "\n", 
-            aborted: false, 
-            truncated: false, 
-            cursor: 0 
-          }
-        };
-
-        return this.validateAndProcessData(mockResults, warnings);
-
-      } catch (error) {
-        if (error instanceof AppError) {
-          throw error;
-        }
-        
-        throw new AppError(
-          `Excel processing failed: ${error instanceof Error ? error.message : String(error)}`,
-          ErrorType.FILE_PROCESSING_ERROR,
-          ErrorSeverity.HIGH,
-          true,
-          'Unable to read the Excel file. Please ensure it\'s not corrupted and try again.'
-        );
-      }
-    }, { maxAttempts: 2, baseDelay: 500 });
-  }
-
   private validateAndProcessData(
-    results: Papa.ParseResult<Record<string, any>>, 
+    parseResult: any, 
     warnings: string[]
   ): Omit<ProcessedFileResult, 'processingTime'> {
-    // Validate headers
-    const headerValidation = validateHeaders(results.meta.fields || []);
+    // Validate headers using existing validation
+    const headerValidation = validateHeaders(parseResult.meta.fields || []);
     if (!headerValidation.isValid) {
       throw new AppError(
         headerValidation.error || 'Invalid headers',
@@ -264,8 +155,8 @@ class FileProcessingService {
       );
     }
 
-    // Validate data
-    const dataValidation = validateData(results.data);
+    // Validate data using data processing service
+    const dataValidation = dataProcessingService.validateData(parseResult.data);
     if (!dataValidation.isValid) {
       throw new AppError(
         dataValidation.error || 'Invalid data',
@@ -276,57 +167,34 @@ class FileProcessingService {
       );
     }
 
-    // Process data into required formats
+    // Process data into required formats using data processing service
     const processedData: FinancialData = {
-      headers: results.meta.fields || [],
-      rows: results.data.slice(0, 5),
-      totalRows: results.data.length
+      headers: parseResult.meta.fields || [],
+      rows: parseResult.data.slice(0, 5),
+      totalRows: parseResult.data.length
     };
 
-    const chartPoints: ChartDataPoint[] = results.data.map((row, index) => {
-      try {
-        const revenue = Number(row.Revenue || row.revenue || 0);
-        const expenses = Number(row.Expenses || row.expenses || 0);
-        const profit = revenue - expenses;
-        const profitMargin = revenue > 0 ? (profit / revenue) * 100 : 0;
+    try {
+      const chartPoints = dataProcessingService.transformToChartData(parseResult.data);
 
-        let date = row.Date || row.date || 'N/A';
-
-        // Handle different date formats
-        if (typeof date === 'string') {
-          date = date.includes('-') ? date : `${date.slice(0, 4)}-${date.slice(4)}`;
-        } else if (typeof date === 'number') {
-          const excelDate = new Date(Date.UTC(0, 0, date - 1));
-          date = excelDate.toISOString().slice(0, 7);
-        } else if (date instanceof Date) {
-          date = date.toISOString().slice(0, 7);
-        } else {
-          date = 'Invalid Date';
-          warnings.push(`Invalid date format in row ${index + 1}`);
-        }
-
-        return {
-          Date: date,
-          Revenue: revenue,
-          Expenses: expenses,
-          profitMargin: Number(profitMargin.toFixed(2))
-        };
-      } catch (error) {
-        warnings.push(`Error processing row ${index + 1}: ${error instanceof Error ? error.message : String(error)}`);
-        return {
-          Date: 'Error',
-          Revenue: 0,
-          Expenses: 0,
-          profitMargin: 0
-        };
+      return {
+        data: processedData,
+        chartData: chartPoints,
+        warnings
+      };
+    } catch (error) {
+      if (error instanceof AppError) {
+        throw error;
       }
-    });
-
-    return {
-      data: processedData,
-      chartData: chartPoints,
-      warnings
-    };
+      
+      throw new AppError(
+        `Data transformation failed: ${error instanceof Error ? error.message : String(error)}`,
+        ErrorType.VALIDATION_ERROR,
+        ErrorSeverity.HIGH,
+        true,
+        'Failed to transform data into chart format'
+      );
+    }
   }
 
   private updateMetrics(success: boolean, processingTime: number): void {

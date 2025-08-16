@@ -8,6 +8,7 @@ import ProfitChart from './profit-chart';
 import ErrorDisplay from './error-display';
 import LoadingState from './loading-state';
 import { fileProcessingService } from '../services/file-processing.service';
+import { dataProcessingService } from '../services/data-processing.service';
 import { AppError, ErrorHandler } from '../utils/error-handling';
 import { CircuitState } from '../utils/circuit-breaker';
 
@@ -38,30 +39,6 @@ const FinancialApp: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const calculateGrowthMetrics = (data: ChartDataPoint[]): TrendMetricsData => {
-    if (data.length < 2) return { revenueGrowth: 0, profitGrowth: 0, marginGrowth: 0 };
-
-    const latest = data[data.length - 1] ?? {};
-    const previous = data[data.length - 2] ?? {};
-
-    const latestRevenue = latest.Revenue ?? 0;
-    const previousRevenue = previous.Revenue ?? 0;
-    const latestExpenses = latest.Expenses ?? 0;
-    const previousExpenses = previous.Expenses ?? 0;
-    const latestMargin = latest.profitMargin ?? 0;
-    const previousMargin = previous.profitMargin ?? 0;
-
-    const revenueGrowth = previousRevenue > 0 ? ((latestRevenue - previousRevenue) / previousRevenue) * 100 : 0;
-    const profitGrowth = previousRevenue - previousExpenses > 0 ? ((latestRevenue - latestExpenses) - (previousRevenue - previousExpenses)) / (previousRevenue - previousExpenses) * 100 : 0;
-    const marginGrowth = Number((latestMargin - previousMargin).toFixed(2));
-
-    return {
-      revenueGrowth: Number(revenueGrowth.toFixed(2)),
-      profitGrowth: Number(profitGrowth.toFixed(2)),
-      marginGrowth: Number(marginGrowth.toFixed(2))
-    };
-  };
-
   const processFile = async (file: File) => {
     setLoading(true);
     setError(null);
@@ -73,7 +50,15 @@ const FinancialApp: React.FC = () => {
     try {
       const result = await fileProcessingService.processFile(file);
       
-      const calculatedTrends = calculateGrowthMetrics(result.chartData);
+      // Use the data processing service for enhanced calculations
+      const chartMetrics = dataProcessingService.calculateMetrics(result.chartData);
+      
+      // Use the processed metrics instead of our simple calculations
+      const calculatedTrends = {
+        revenueGrowth: chartMetrics.trends.revenueGrowth,
+        profitGrowth: chartMetrics.trends.profitGrowth,
+        marginGrowth: chartMetrics.trends.marginGrowth
+      };
 
       setFileData(result.data);
       setChartData(result.chartData);
@@ -84,7 +69,9 @@ const FinancialApp: React.FC = () => {
       console.log('File processed successfully:', {
         processingTime: result.processingTime,
         warnings: result.warnings.length,
-        rows: result.data.totalRows
+        rows: result.data.totalRows,
+        totalRevenue: chartMetrics.summaryStats.totalRevenue,
+        averageMargin: chartMetrics.summaryStats.averageMargin
       });
 
     } catch (err) {
