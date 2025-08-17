@@ -58,7 +58,7 @@ The Financial Dashboard is a web application that transforms spreadsheet data in
 - **Data Validation**: Input validation with helpful error messages
 - **Error Recovery**: Circuit breaker pattern for reliable processing
 - **Type Safety**: TypeScript for better code quality and development experience
-- **Fast Processing**: Optimized performance, typically under 100ms
+- **Fast Processing**: Optimized performance, typically ~50ms for most files
 - **State Management**: Zustand store with persistence and undo/redo
 - **Performance Monitoring**: Built-in performance tracking and optimization
 
@@ -143,7 +143,7 @@ The application follows standard React patterns with TypeScript:
 
 #### State Management & Performance
 - **Zustand Store**: Modular store architecture with 7 specialized slices
-- **Command Pattern**: Reversible operations with comprehensive undo/redo
+- **Command Pattern**: Reversible operations with comprehensive undo/redo (50-operation memory)
 - **Individual Selectors**: Performance-optimized subscriptions preventing re-renders
 - **localStorage Integration**: Smart persistence with selective data storage
 - **Performance Monitoring**: Development tools for optimization and debugging
@@ -279,9 +279,11 @@ export const useLoading = () => useAppStore(state => state.loading);
 export const useSetFileData = () => useAppStore(state => state.setFileData);
 
 // Factory pattern prevents memory leaks
-export const createShallowSelector = () => {
-  return () => {
-    // Clean factory implementation
+export const createShallowSelector = (selector) => {
+  return (state) => {
+    // Create shallow comparison selector to prevent unnecessary re-renders
+    const result = selector(state);
+    return Array.isArray(result) ? result : { ...result };
   };
 };
 ```
