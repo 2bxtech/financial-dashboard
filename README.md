@@ -312,7 +312,7 @@ git checkout -b feature/your-feature-name
 npm install
 
 # Start development server
-npm start
+npm run dev
 
 # Run tests
 npm test
