@@ -220,7 +220,7 @@ export async function withRetry<T>(
     throw new Error('Invalid retry configuration: maxAttempts must be a positive integer.');
   }
 
-  let lastError: Error | null = null;
+  let lastError: Error;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
