@@ -7,6 +7,33 @@ export class CommandFactory {
     return `cmd_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
+  // Helper method to restore upload state
+  private static restoreUploadState(store: any, state: any): void {
+    if (state.fileData) {
+      store.setFileData(state.fileData);
+    } else {
+      store.clearFinancialData();
+    }
+    
+    if (state.chartData) {
+      store.setChartData(state.chartData);
+    }
+    
+    if (state.trends) {
+      store.setTrends(state.trends);
+    }
+    
+    store.setWarnings(state.warnings);
+    
+    if (state.processingTime !== null) {
+      store.setProcessingTime(state.processingTime);
+    }
+    
+    if (state.lastFileInfo) {
+      store.setLastFileInfo(state.lastFileInfo);
+    }
+  }
+
   // File upload command
   static createFileUploadCommand(
     fileData: FinancialData,
@@ -47,29 +74,7 @@ export class CommandFactory {
         store.setLastFileInfo(fileInfo);
       },
       undo: () => {
-        if (previousState.fileData) {
-          store.setFileData(previousState.fileData);
-        } else {
-          store.clearFinancialData();
-        }
-        
-        if (previousState.chartData) {
-          store.setChartData(previousState.chartData);
-        }
-        
-        if (previousState.trends) {
-          store.setTrends(previousState.trends);
-        }
-        
-        store.setWarnings(previousState.warnings);
-        
-        if (previousState.processingTime !== null) {
-          store.setProcessingTime(previousState.processingTime);
-        }
-        
-        if (previousState.lastFileInfo) {
-          store.setLastFileInfo(previousState.lastFileInfo);
-        }
+        CommandFactory.restoreUploadState(store, previousState);
       },
     };
   }
@@ -97,27 +102,7 @@ export class CommandFactory {
         store.clearFinancialData();
       },
       undo: () => {
-        if (previousState.fileData) {
-          store.setFileData(previousState.fileData);
-        }
-        
-        if (previousState.chartData) {
-          store.setChartData(previousState.chartData);
-        }
-        
-        if (previousState.trends) {
-          store.setTrends(previousState.trends);
-        }
-        
-        store.setWarnings(previousState.warnings);
-        
-        if (previousState.processingTime !== null) {
-          store.setProcessingTime(previousState.processingTime);
-        }
-        
-        if (previousState.lastFileInfo) {
-          store.setLastFileInfo(previousState.lastFileInfo);
-        }
+        CommandFactory.restoreUploadState(store, previousState);
       },
     };
   }
@@ -225,15 +210,7 @@ export class CommandFactory {
         store.addComparisonFile(file);
       },
       undo: () => {
-        // Remove the added file and restore previous state
         store.removeComparisonFile(file.id);
-        // If the previous files list was different, restore it completely
-        if (previousFiles.length !== store.comparisonFiles.length) {
-          store.clearAllComparisons();
-          previousFiles.forEach(prevFile => {
-            store.addComparisonFile(prevFile);
-          });
-        }
       },
     };
   }

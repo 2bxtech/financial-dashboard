@@ -327,7 +327,9 @@ export const measurePerformance = <T extends (...args: any[]) => any>(
 /**
  * Auto-enable performance monitoring in development
  */
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' ||
+    process.env.VITE_ENV === 'development' ||
+    (!process.env.NODE_ENV && process.env.ENABLE_STORE_PERFORMANCE_MONITOR === 'true')) {
   // Enable monitoring automatically in development
   storePerformanceMonitor.enable();
   

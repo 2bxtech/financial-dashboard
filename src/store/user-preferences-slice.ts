@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { UserPreferencesSlice } from './types';
 
 const defaultPreferences = {
-  theme: 'system' as const,
+  theme: 'light' as const,
   language: 'en',
   currency: 'USD',
   dateFormat: 'MM/DD/YYYY',

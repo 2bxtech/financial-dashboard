@@ -23,7 +23,7 @@ export const createUIStateSlice: StateCreator<
 > = (set, get) => ({
   // Initial state
   loading: false,
-  activeTab: 'dashboard',
+  activeTab: 'overview',
   sidebarCollapsed: false,
   chartSettings: defaultChartSettings,
   dashboardLayout: defaultDashboardLayout,
@@ -56,7 +56,7 @@ export const createUIStateSlice: StateCreator<
   resetUIState: () => {
     set({
       loading: false,
-      activeTab: 'dashboard',
+      activeTab: 'overview',
       sidebarCollapsed: false,
       chartSettings: defaultChartSettings,
       dashboardLayout: defaultDashboardLayout,
