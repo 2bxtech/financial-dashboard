@@ -4,7 +4,7 @@
  */
 
 import { useEffect } from 'react';
-import { useUndoRedoActions } from '../store';
+import { useUndo, useRedo } from '../store';
 
 export interface KeyboardShortcutsOptions {
   enableUndoRedo?: boolean;
@@ -31,7 +31,8 @@ export const useKeyboardShortcuts = (options: KeyboardShortcutsOptions = {}) => 
     customShortcuts = []
   } = options;
 
-  const { undo, redo } = useUndoRedoActions();
+  const undo = useUndo();
+  const redo = useRedo();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
