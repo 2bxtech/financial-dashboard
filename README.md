@@ -298,7 +298,7 @@ Date,Revenue,Expenses,Department,Region,Product Category
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+We welcome contributions! Please see the guidelines below for details.
 
 ### Development Setup
 ```bash
