@@ -334,7 +334,21 @@ if (
     (!process.env.NODE_ENV && process.env.ENABLE_STORE_PERFORMANCE_MONITOR === 'true')
   ) &&
   process.env.DISABLE_STORE_PERFORMANCE_MONITOR !== 'true'
-) {
+ * Determines if performance monitoring should be auto-enabled in development.
+ */
+function shouldEnablePerformanceMonitoring(): boolean {
+  const isDev =
+    process.env.NODE_ENV === 'development' ||
+    process.env.VITE_ENV === 'development' ||
+    (!process.env.NODE_ENV && process.env.ENABLE_STORE_PERFORMANCE_MONITOR === 'true');
+  const isDisabled = process.env.DISABLE_STORE_PERFORMANCE_MONITOR === 'true';
+  return isDev && !isDisabled;
+}
+
+/**
+ * Auto-enable performance monitoring in development
+ */
+if (shouldEnablePerformanceMonitoring()) {
   // Enable monitoring automatically in development
   storePerformanceMonitor.enable();
   
