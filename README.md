@@ -18,7 +18,7 @@ cd financial-dashboard
 npm install
 
 # Start development server
-npm start
+npm run dev
 
 # Run tests
 npm test
