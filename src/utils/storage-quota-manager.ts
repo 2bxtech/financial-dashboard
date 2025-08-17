@@ -6,6 +6,9 @@
 export class StorageQuotaManager {
   private static readonly QUOTA_THRESHOLD = 0.85; // 85% usage threshold
   private static readonly STORAGE_KEY = 'financial-dashboard-storage-info';
+  
+  // Essential keys that should not be cleared during emergency cleanup
+  private static readonly ESSENTIAL_KEYS = ['financial-dashboard-store'];
 
   /**
    * Check current storage quota usage
@@ -256,7 +259,7 @@ export class StorageQuotaManager {
   static emergencyClear(): void {
     try {
       // Only clear non-essential items, preserve user preferences
-      const essentialKeys = ['financial-dashboard-store'];
+      const essentialKeys = this.ESSENTIAL_KEYS;
       const keysToRemove: string[] = [];
       
       for (let key in localStorage) {

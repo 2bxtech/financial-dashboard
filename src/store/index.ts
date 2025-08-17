@@ -98,7 +98,8 @@ export const useAppStore = create<AppStore>()(
 );
 
 // Individual property selectors to prevent unnecessary re-renders
-// These are the ONLY exports - no composed hooks that create new objects
+// These are the ONLY recommended exports for optimal performance
+// All legacy composed hooks have been removed to prevent performance issues
 
 // Financial Data selectors
 export const useFileData = () => useAppStore((state) => state.fileData);
@@ -185,112 +186,6 @@ export const useAddComparisonFile = () => useAppStore((state) => state.addCompar
 export const useRemoveComparisonFile = () => useAppStore((state) => state.removeComparisonFile);
 export const useSetActiveComparison = () => useAppStore((state) => state.setActiveComparison);
 export const useClearAllComparisons = () => useAppStore((state) => state.clearAllComparisons);
-
-// DEPRECATED: Legacy composed hooks for backward compatibility (will be removed soon)
-// WARNING: Using this hook will cause unnecessary re-renders and undermine performance optimizations.
-// Please migrate to individual selector hooks above. This hook will be removed in the next major release.
-export const useFinancialData = () => {
-  // Runtime deprecation warning
-  if (process.env.NODE_ENV !== 'production') {
-    console.warn(
-      '[DEPRECATED] useFinancialData is deprecated and will be removed soon. ' +
-      'It creates a new object on every render, causing unnecessary re-renders. ' +
-      'Please use individual selector hooks instead.'
-    );
-  }
-  
-  return useAppStore((state) => ({
-    fileData: state.fileData,
-    chartData: state.chartData,
-    trends: state.trends,
-    warnings: state.warnings,
-    processingTime: state.processingTime,
-    lastFileInfo: state.lastFileInfo,
-    setFileData: state.setFileData,
-    setChartData: state.setChartData,
-    setTrends: state.setTrends,
-    setWarnings: state.setWarnings,
-    setProcessingTime: state.setProcessingTime,
-    setLastFileInfo: state.setLastFileInfo,
-    clearFinancialData: state.clearFinancialData,
-  }));
-};
-
-export const useUIState = () => {
-  return useAppStore((state) => ({
-    loading: state.loading,
-    activeTab: state.activeTab,
-    sidebarCollapsed: state.sidebarCollapsed,
-    chartSettings: state.chartSettings,
-    dashboardLayout: state.dashboardLayout,
-    setLoading: state.setLoading,
-    setActiveTab: state.setActiveTab,
-    setSidebarCollapsed: state.setSidebarCollapsed,
-    updateChartSettings: state.updateChartSettings,
-    updateDashboardLayout: state.updateDashboardLayout,
-    resetUIState: state.resetUIState,
-  }));
-};
-
-export const useErrorState = () => {
-  return useAppStore((state) => ({
-    error: state.error,
-    errorHistory: state.errorHistory,
-    circuitBreakerState: state.circuitBreakerState,
-    setError: state.setError,
-    addToErrorHistory: state.addToErrorHistory,
-    clearError: state.clearError,
-    clearErrorHistory: state.clearErrorHistory,
-    setCircuitBreakerState: state.setCircuitBreakerState,
-  }));
-};
-
-export const useProcessingMetrics = () => {
-  return useAppStore((state) => ({
-    totalFilesProcessed: state.totalFilesProcessed,
-    totalProcessingTime: state.totalProcessingTime,
-    averageProcessingTime: state.averageProcessingTime,
-    successfulUploads: state.successfulUploads,
-    failedUploads: state.failedUploads,
-    lastProcessedAt: state.lastProcessedAt,
-    performanceHistory: state.performanceHistory,
-    recordProcessingMetrics: state.recordProcessingMetrics,
-    clearMetrics: state.clearMetrics,
-  }));
-};
-
-export const useUndoRedo = () => {
-  return useAppStore((state) => ({
-    undoStack: state.undoStack,
-    redoStack: state.redoStack,
-    maxHistorySize: state.maxHistorySize,
-    canUndo: state.canUndo,
-    canRedo: state.canRedo,
-    executeCommand: state.executeCommand,
-    undo: state.undo,
-    redo: state.redo,
-    clearHistory: state.clearHistory,
-  }));
-};
-
-export const useUserPreferences = () => {
-  return useAppStore((state) => ({
-    preferences: state.preferences,
-    updatePreferences: state.updatePreferences,
-    resetPreferences: state.resetPreferences,
-  }));
-};
-
-export const useFileComparison = () => {
-  return useAppStore((state) => ({
-    comparisonFiles: state.comparisonFiles,
-    activeComparison: state.activeComparison,
-    addComparisonFile: state.addComparisonFile,
-    removeComparisonFile: state.removeComparisonFile,
-    setActiveComparison: state.setActiveComparison,
-    clearAllComparisons: state.clearAllComparisons,
-  }));
-};
 
 // Store actions for complex operations
 export const StoreActions = {
