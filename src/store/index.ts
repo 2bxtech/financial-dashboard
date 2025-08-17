@@ -189,7 +189,6 @@ export const useClearAllComparisons = () => useAppStore((state) => state.clearAl
 // DEPRECATED: Legacy composed hooks for backward compatibility (will be removed)
 // Use individual selectors above instead to prevent re-renders
 export const useFinancialData = () => {
-  console.warn('useFinancialData is deprecated. Use individual selectors like useFileData(), useChartData(), etc.');
   return useAppStore((state) => ({
     fileData: state.fileData,
     chartData: state.chartData,
@@ -208,7 +207,6 @@ export const useFinancialData = () => {
 };
 
 export const useUIState = () => {
-  console.warn('useUIState is deprecated. Use individual selectors like useLoading(), useChartSettings(), etc.');
   return useAppStore((state) => ({
     loading: state.loading,
     activeTab: state.activeTab,
@@ -225,7 +223,6 @@ export const useUIState = () => {
 };
 
 export const useErrorState = () => {
-  console.warn('useErrorState is deprecated. Use individual selectors like useError(), useErrorHistory(), etc.');
   return useAppStore((state) => ({
     error: state.error,
     errorHistory: state.errorHistory,
@@ -239,7 +236,6 @@ export const useErrorState = () => {
 };
 
 export const useProcessingMetrics = () => {
-  console.warn('useProcessingMetrics is deprecated. Use individual selectors like useTotalFilesProcessed(), etc.');
   return useAppStore((state) => ({
     totalFilesProcessed: state.totalFilesProcessed,
     totalProcessingTime: state.totalProcessingTime,
@@ -254,7 +250,6 @@ export const useProcessingMetrics = () => {
 };
 
 export const useUndoRedo = () => {
-  console.warn('useUndoRedo is deprecated. Use individual selectors like useCanUndo(), useUndo(), etc.');
   return useAppStore((state) => ({
     undoStack: state.undoStack,
     redoStack: state.redoStack,
@@ -269,7 +264,6 @@ export const useUndoRedo = () => {
 };
 
 export const useUserPreferences = () => {
-  console.warn('useUserPreferences is deprecated. Use individual selectors like usePreferences(), useUpdatePreferences(), etc.');
   return useAppStore((state) => ({
     preferences: state.preferences,
     updatePreferences: state.updatePreferences,
@@ -278,7 +272,6 @@ export const useUserPreferences = () => {
 };
 
 export const useFileComparison = () => {
-  console.warn('useFileComparison is deprecated. Use individual selectors like useComparisonFiles(), etc.');
   return useAppStore((state) => ({
     comparisonFiles: state.comparisonFiles,
     activeComparison: state.activeComparison,

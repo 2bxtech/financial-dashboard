@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { useUndoRedo, useUserPreferences, useUIState } from '../store/store';
+import { 
+  usePreferences, 
+  useChartSettings, 
+  useDashboardLayout,
+  useUndoStack,
+  useRedoStack
+} from '../store';
 import { CommandHelpers } from '../store/commands';
 import { UndoRedoControls } from './undo-redo-controls';
 
 export const StoreDemo: React.FC = () => {
-  const { preferences } = useUserPreferences();
-  const { chartSettings, dashboardLayout } = useUIState();
-  const { undoStack, redoStack } = useUndoRedo();
+  const preferences = usePreferences();
+  const chartSettings = useChartSettings();
+  const dashboardLayout = useDashboardLayout();
+  const undoStack = useUndoStack();
+  const redoStack = useRedoStack();
 
   const [newTheme, setNewTheme] = useState<'light' | 'dark' | 'system'>('light');
   const [newChartType, setNewChartType] = useState<'line' | 'bar' | 'area'>('line');

@@ -1,6 +1,6 @@
 import { Command } from './types';
 import { FinancialData, ChartDataPoint, TrendMetricsData } from '../types';
-import { useAppStore } from './store';
+import { useAppStore } from './index';
 
 export class CommandFactory {
   private static generateId(): string {

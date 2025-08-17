@@ -1,5 +1,12 @@
 import React from 'react';
-import { useUndoRedo } from '../store/store';
+import { 
+  useUndo,
+  useRedo,
+  useCanUndo,
+  useCanRedo,
+  useUndoStack,
+  useRedoStack
+} from '../store';
 import { Undo, Redo } from 'lucide-react';
 
 // Simple button component
@@ -37,17 +44,12 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 export const UndoRedoControls: React.FC = () => {
-  const { 
-    undo, 
-    redo, 
-    canUndo, 
-    canRedo, 
-    undoStack, 
-    redoStack 
-  } = useUndoRedo();
-
-  const canUndoResult = canUndo();
-  const canRedoResult = canRedo();
+  const undo = useUndo();
+  const redo = useRedo();
+  const canUndo = useCanUndo();
+  const canRedo = useCanRedo();
+  const undoStack = useUndoStack();
+  const redoStack = useRedoStack();
 
   const lastUndoCommand = undoStack.length > 0 ? undoStack[undoStack.length - 1] : null;
   const lastRedoCommand = redoStack.length > 0 ? redoStack[redoStack.length - 1] : null;
@@ -58,7 +60,7 @@ export const UndoRedoControls: React.FC = () => {
         variant="outline"
         size="sm"
         onClick={undo}
-        disabled={!canUndoResult}
+        disabled={!canUndo}
         title={lastUndoCommand ? `Undo: ${lastUndoCommand.description}` : 'Nothing to undo'}
         className="flex items-center space-x-1"
       >
@@ -70,7 +72,7 @@ export const UndoRedoControls: React.FC = () => {
         variant="outline"
         size="sm"
         onClick={redo}
-        disabled={!canRedoResult}
+        disabled={!canRedo}
         title={lastRedoCommand ? `Redo: ${lastRedoCommand.description}` : 'Nothing to redo'}
         className="flex items-center space-x-1"
       >
@@ -88,7 +90,8 @@ interface UndoRedoStatusProps {
 export const UndoRedoStatus: React.FC<UndoRedoStatusProps> = ({ 
   showDetails = false 
 }) => {
-  const { undoStack, redoStack } = useUndoRedo();
+  const undoStack = useUndoStack();
+  const redoStack = useRedoStack();
 
   if (!showDetails) {
     return null;

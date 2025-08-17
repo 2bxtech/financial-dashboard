@@ -13,11 +13,23 @@ import { dataProcessingService } from '../services/data-processing.service';
 import { AppError, ErrorHandler } from '../utils/error-handling';
 import { CircuitState } from '../utils/circuit-breaker';
 import { 
-  useFinancialData, 
-  useUIState, 
-  useErrorState, 
-  useProcessingMetrics 
-} from '../store/store';
+  useFileData,
+  useChartData,
+  useTrends,
+  useWarnings,
+  useProcessingTime,
+  useLastFileInfo,
+  useSetWarnings,
+  useClearFinancialData,
+  useLoading,
+  useSetLoading,
+  useError,
+  useCircuitBreakerState,
+  useSetError,
+  useClearError,
+  useSetCircuitBreakerState,
+  useRecordProcessingMetrics
+} from '../store';
 import { CommandHelpers } from '../store/commands';
 
 // Helper function to check if value is a valid CircuitState
@@ -26,34 +38,26 @@ function isCircuitState(value: any): value is CircuitState {
 }
 
 const FinancialApp: React.FC = () => {
-  // Use Zustand store hooks instead of local state
-  const {
-    fileData,
-    chartData,
-    trends,
-    warnings,
-    processingTime,
-    lastFileInfo,
-    setWarnings,
-    clearFinancialData,
-  } = useFinancialData();
+  // Use individual Zustand selectors to prevent unnecessary re-renders
+  const fileData = useFileData();
+  const chartData = useChartData();
+  const trends = useTrends();
+  const warnings = useWarnings();
+  const processingTime = useProcessingTime();
+  const lastFileInfo = useLastFileInfo();
+  const setWarnings = useSetWarnings();
+  const clearFinancialData = useClearFinancialData();
 
-  const {
-    loading,
-    setLoading,
-  } = useUIState();
+  const loading = useLoading();
+  const setLoading = useSetLoading();
 
-  const {
-    error,
-    circuitBreakerState,
-    setError,
-    clearError,
-    setCircuitBreakerState,
-  } = useErrorState();
+  const error = useError();
+  const circuitBreakerState = useCircuitBreakerState();
+  const setError = useSetError();
+  const clearError = useClearError();
+  const setCircuitBreakerState = useSetCircuitBreakerState();
 
-  const {
-    recordProcessingMetrics,
-  } = useProcessingMetrics();
+  const recordProcessingMetrics = useRecordProcessingMetrics();
 
   // Subscribe to error events
   useEffect(() => {
@@ -124,15 +128,6 @@ const FinancialApp: React.FC = () => {
         fileSize: file.size,
         processingTime,
         success: true,
-      });
-
-      // Log success metrics
-      console.log('File processed successfully:', {
-        processingTime: result.processingTime,
-        warnings: result.warnings.length,
-        rows: result.data.totalRows,
-        totalRevenue: chartMetrics.summaryStats.totalRevenue,
-        averageMargin: chartMetrics.summaryStats.averageMargin
       });
 
     } catch (err) {
