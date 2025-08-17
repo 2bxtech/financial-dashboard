@@ -279,12 +279,11 @@ export const useLoading = () => useAppStore(state => state.loading);
 export const useSetFileData = () => useAppStore(state => state.setFileData);
 
 // Factory pattern prevents memory leaks
+import { shallow } from 'zustand/shallow';
+
+// Factory to create a shallow-equality selector for Zustand
 export const createShallowSelector = (selector) => {
-  return (state) => {
-    // Create shallow comparison selector to prevent unnecessary re-renders
-    const result = selector(state);
-    return Array.isArray(result) ? result : { ...result };
-  };
+  return (state) => shallow(selector(state));
 };
 ```
 
