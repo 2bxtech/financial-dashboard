@@ -3,7 +3,7 @@
  * Now uses dependency injection and clean separation of concerns
  */
 
-import { CircuitBreaker, CircuitBreakerConfig } from '../utils/circuit-breaker';
+import { CircuitBreaker, CircuitBreakerConfig, CircuitState } from '../utils/circuit-breaker';
 import { AppError, ErrorType, ErrorSeverity, ErrorHandler, withRetry } from '../utils/error-handling';
 import { validateData, validateHeaders, validateFile } from '../utils/validation-utils';
 import { FinancialData, ChartDataPoint } from '../types';
@@ -222,7 +222,7 @@ class FileProcessingService {
     };
   }
 
-  getCircuitBreakerState(): string {
+  getCircuitBreakerState(): CircuitState {
     return this.circuitBreaker.getState();
   }
 

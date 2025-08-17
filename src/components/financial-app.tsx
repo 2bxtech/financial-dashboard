@@ -32,11 +32,6 @@ import {
 } from '../store';
 import { CommandHelpers } from '../store/commands';
 
-// Helper function to check if value is a valid CircuitState
-function isCircuitState(value: any): value is CircuitState {
-  return Object.values(CircuitState).includes(value);
-}
-
 const FinancialApp: React.FC = () => {
   // Use individual Zustand selectors to prevent unnecessary re-renders
   const fileData = useFileData();
@@ -72,13 +67,7 @@ const FinancialApp: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const state = fileProcessingService.getCircuitBreakerState();
-      if (isCircuitState(state)) {
-        setCircuitBreakerState(state);
-      } else {
-        // Optionally handle invalid state, e.g. set to CLOSED or log an error
-        setCircuitBreakerState(CircuitState.CLOSED);
-        console.warn('Invalid circuit breaker state:', state);
-      }
+      setCircuitBreakerState(state);
     }, 1000);
 
     return () => clearInterval(interval);
