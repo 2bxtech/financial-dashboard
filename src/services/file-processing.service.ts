@@ -3,7 +3,7 @@
  * Now uses dependency injection and clean separation of concerns
  */
 
-import { CircuitBreaker, CircuitBreakerConfig } from '../utils/circuit-breaker';
+import { CircuitBreaker, CircuitBreakerConfig, CircuitState } from '../utils/circuit-breaker';
 import { AppError, ErrorType, ErrorSeverity, ErrorHandler, withRetry } from '../utils/error-handling';
 import { validateData, validateHeaders, validateFile } from '../utils/validation-utils';
 import { FinancialData, ChartDataPoint } from '../types';
@@ -222,8 +222,20 @@ class FileProcessingService {
     };
   }
 
-  getCircuitBreakerState(): string {
-    return this.circuitBreaker.getState();
+  getCircuitBreakerState(): {
+    isOpen: boolean;
+    failureCount: number;
+    lastFailureTime: number | null;
+    state: CircuitState;
+  } {
+    const state = this.circuitBreaker.getState();
+    const metrics = this.circuitBreaker.getMetrics();
+    return {
+      isOpen: state !== CircuitState.CLOSED,
+      failureCount: metrics.totalFailures,
+      lastFailureTime: metrics.lastFailureTime,
+      state: state,
+    };
   }
 
   isServiceOperational(): boolean {

@@ -11,7 +11,12 @@ interface LoadingStateProps {
   loading: boolean;
   progress?: number;
   message?: string;
-  circuitBreakerState?: CircuitState;
+  circuitBreakerState?: {
+    isOpen: boolean;
+    failureCount: number;
+    lastFailureTime: number | null;
+    state: CircuitState;
+  };
   showCircuitStatus?: boolean;
 }
 
@@ -25,7 +30,8 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   if (!loading) return null;
 
   const getCircuitStatusIcon = () => {
-    switch (circuitBreakerState) {
+    if (!circuitBreakerState) return null;
+    switch (circuitBreakerState.state) {
       case CircuitState.CLOSED:
         return <CheckCircle className="h-4 w-4 text-green-500" />;
       case CircuitState.HALF_OPEN:
@@ -38,7 +44,8 @@ const LoadingState: React.FC<LoadingStateProps> = ({
   };
 
   const getCircuitStatusText = () => {
-    switch (circuitBreakerState) {
+    if (!circuitBreakerState) return '';
+    switch (circuitBreakerState.state) {
       case CircuitState.CLOSED:
         return 'Service operational';
       case CircuitState.HALF_OPEN:

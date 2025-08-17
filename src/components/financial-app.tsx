@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import FileUploader from './file-uploader';
 import DataPreview from './data-preview';
@@ -7,19 +7,52 @@ import RevenueChart from './revenue-chart';
 import ProfitChart from './profit-chart';
 import ErrorDisplay from './error-display';
 import LoadingState from './loading-state';
+import { UndoRedoControls } from './undo-redo-controls';
 import { fileProcessingService } from '../services/file-processing.service';
 import { dataProcessingService } from '../services/data-processing.service';
 import { AppError, ErrorHandler } from '../utils/error-handling';
 import { CircuitState } from '../utils/circuit-breaker';
+import { 
+  useFileData,
+  useChartData,
+  useTrends,
+  useWarnings,
+  useProcessingTime,
+  useLastFileInfo,
+  useSetWarnings,
+  useClearFinancialData,
+  useLoading,
+  useSetLoading,
+  useError,
+  useCircuitBreakerState,
+  useSetError,
+  useClearError,
+  useSetCircuitBreakerState,
+  useRecordProcessingMetrics
+} from '../store';
+import { CommandHelpers } from '../store/index';
 
 const FinancialApp: React.FC = () => {
-  const [fileData, setFileData] = useState<FinancialData | null>(null);
-  const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
-  const [error, setError] = useState<AppError | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [trends, setTrends] = useState<TrendMetricsData | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
-  const [circuitBreakerState, setCircuitBreakerState] = useState<CircuitState>(CircuitState.CLOSED);
+  // Use individual Zustand selectors to prevent unnecessary re-renders
+  const fileData = useFileData();
+  const chartData = useChartData();
+  const trends = useTrends();
+  const warnings = useWarnings();
+  const processingTime = useProcessingTime();
+  const lastFileInfo = useLastFileInfo();
+  const setWarnings = useSetWarnings();
+  const clearFinancialData = useClearFinancialData();
+
+  const loading = useLoading();
+  const setLoading = useSetLoading();
+
+  const error = useError();
+  const circuitBreakerState = useCircuitBreakerState();
+  const setError = useSetError();
+  const clearError = useClearError();
+  const setCircuitBreakerState = useSetCircuitBreakerState();
+
+  const recordProcessingMetrics = useRecordProcessingMetrics();
 
   // Subscribe to error events
   useEffect(() => {
@@ -28,31 +61,25 @@ const FinancialApp: React.FC = () => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [setError]);
 
   // Update circuit breaker state periodically
   useEffect(() => {
     const interval = setInterval(() => {
       const state = fileProcessingService.getCircuitBreakerState();
-      if (isCircuitState(state)) {
-        setCircuitBreakerState(state);
-      } else {
-        // Optionally handle invalid state, e.g. set to CLOSED or log an error
-        setCircuitBreakerState(CircuitState.CLOSED);
-        console.warn('Invalid circuit breaker state:', state);
-      }
+      setCircuitBreakerState(state);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [setCircuitBreakerState]);
 
   const processFile = async (file: File) => {
     setLoading(true);
     setError(null);
-    setFileData(null);
-    setChartData(null);
-    setTrends(null);
+    clearFinancialData();
     setWarnings([]);
+
+    const startTime = Date.now();
 
     try {
       const result = await fileProcessingService.processFile(file);
@@ -67,21 +94,41 @@ const FinancialApp: React.FC = () => {
         marginGrowth: chartMetrics.trends.marginGrowth
       };
 
-      setFileData(result.data);
-      setChartData(result.chartData);
-      setTrends(calculatedTrends);
-      setWarnings(result.warnings);
+      const processingTime = Date.now() - startTime;
+      const fileInfo = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      };
 
-      // Log success metrics
-      console.log('File processed successfully:', {
-        processingTime: result.processingTime,
-        warnings: result.warnings.length,
-        rows: result.data.totalRows,
-        totalRevenue: chartMetrics.summaryStats.totalRevenue,
-        averageMargin: chartMetrics.summaryStats.averageMargin
+      // Use command pattern for undo/redo support
+      CommandHelpers.handleFileUpload(
+        result.data,
+        result.chartData,
+        calculatedTrends,
+        result.warnings,
+        processingTime,
+        fileInfo
+      );
+
+      // Record processing metrics
+      recordProcessingMetrics({
+        fileSize: file.size,
+        processingTime,
+        success: true,
       });
 
     } catch (err) {
+      const processingTime = Date.now() - startTime;
+      
+      // Record failed processing metrics
+      recordProcessingMetrics({
+        fileSize: file.size,
+        processingTime,
+        success: false,
+      });
+
       if (err instanceof AppError) {
         setError(err);
       } else {
@@ -94,11 +141,11 @@ const FinancialApp: React.FC = () => {
   };
 
   const handleRetry = () => {
-    setError(null);
+    clearError();
   };
 
   const handleDismissError = () => {
-    setError(null);
+    clearError();
   };
 
   const handleFileUploaderError = (errorMessage: string) => {
@@ -108,6 +155,11 @@ const FinancialApp: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Financial Dashboard</h1>
+        <UndoRedoControls />
+      </div>
+      
       <FileUploader 
         onFileUpload={processFile} 
         onError={handleFileUploaderError}

@@ -3,12 +3,18 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import FinancialApp from '../financial-app';
 import { fileProcessingService } from '../../services/file-processing.service';
 import { AppError, ErrorType } from '../../utils/error-handling';
+import { CircuitState } from '../../utils/circuit-breaker';
 
 // Mock the file processing service
 jest.mock('../../services/file-processing.service', () => ({
   fileProcessingService: {
     processFile: jest.fn(),
-    getCircuitBreakerState: jest.fn(() => 'CLOSED'),
+    getCircuitBreakerState: jest.fn(() => ({
+      isOpen: false,
+      failureCount: 0,
+      lastFailureTime: null,
+      state: 'CLOSED',
+    })),
     getMetrics: jest.fn(() => ({
       totalFilesProcessed: 0,
       successfulProcessing: 0,
@@ -24,7 +30,12 @@ const mockFileProcessingService = fileProcessingService as jest.Mocked<typeof fi
 describe('FinancialApp (CSV flow only)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockFileProcessingService.getCircuitBreakerState.mockReturnValue('CLOSED');
+    mockFileProcessingService.getCircuitBreakerState.mockReturnValue({
+      isOpen: false,
+      failureCount: 0,
+      lastFailureTime: null,
+      state: CircuitState.CLOSED,
+    });
   });
 
   // Mock container size to fix chart rendering issue
