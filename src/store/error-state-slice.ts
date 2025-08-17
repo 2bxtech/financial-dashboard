@@ -12,7 +12,12 @@ export const createErrorStateSlice: StateCreator<
   // Initial state
   error: null,
   errorHistory: [],
-  circuitBreakerState: CircuitState.CLOSED,
+  circuitBreakerState: {
+    isOpen: false,
+    failureCount: 0,
+    lastFailureTime: null,
+    state: CircuitState.CLOSED,
+  },
 
   // Actions
   setError: (error) => {
