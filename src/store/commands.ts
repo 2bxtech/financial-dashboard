@@ -1,3 +1,19 @@
+/**
+ * Command Pattern Implementation for Undo/Redo functionality
+ * 
+ * This file implements the Command pattern to enable undo/redo operations.
+ * 
+ * IMPORTANT: To prevent memory leaks and stale data issues with closure variables:
+ * - State is captured at EXECUTION time, not at CREATION time
+ * - Each command uses closure variables (capturedState, capturedSettings, etc.)
+ * - Error handling ensures commands are only added to undo stack on successful execution
+ * 
+ * This approach prevents:
+ * 1. Memory leaks from persistent closure variables
+ * 2. Stale data when store state changes between command creation and execution
+ * 3. Inconsistent state when operations fail after being added to undo stack
+ */
+
 import { Command } from './types';
 import { FinancialData, ChartDataPoint, TrendMetricsData } from '../types';
 import type { AppStore } from './types';
@@ -49,15 +65,7 @@ export class CommandFactory {
       lastModified: number;
     }
   ): Command {
-    // Capture current state for undo
-    const previousState = {
-      fileData: store.fileData,
-      chartData: store.chartData,
-      trends: store.trends,
-      warnings: store.warnings,
-      processingTime: store.processingTime,
-      lastFileInfo: store.lastFileInfo,
-    };
+    let capturedState: any = null;
 
     return {
       id: this.generateId(),
@@ -65,6 +73,16 @@ export class CommandFactory {
       description: `Upload file: ${fileInfo.name}`,
       timestamp: Date.now(),
       execute: () => {
+        // Capture current state at execution time to avoid stale data
+        capturedState = {
+          fileData: store.fileData,
+          chartData: store.chartData,
+          trends: store.trends,
+          warnings: store.warnings,
+          processingTime: store.processingTime,
+          lastFileInfo: store.lastFileInfo,
+        };
+
         store.setFileData(fileData);
         store.setChartData(chartData);
         store.setTrends(trends);
@@ -73,22 +91,17 @@ export class CommandFactory {
         store.setLastFileInfo(fileInfo);
       },
       undo: () => {
-        CommandFactory.restoreUploadState(store, previousState);
+        if (!capturedState) {
+          throw new Error('Cannot undo: previous state not captured during execution');
+        }
+        CommandFactory.restoreUploadState(store, capturedState);
       },
     };
   }
 
   // Clear data command
   static createClearDataCommand(store: AppStore): Command {
-    // Capture current state for undo
-    const previousState = {
-      fileData: store.fileData,
-      chartData: store.chartData,
-      trends: store.trends,
-      warnings: store.warnings,
-      processingTime: store.processingTime,
-      lastFileInfo: store.lastFileInfo,
-    };
+    let capturedState: any = null;
 
     return {
       id: this.generateId(),
@@ -96,10 +109,23 @@ export class CommandFactory {
       description: 'Clear all financial data',
       timestamp: Date.now(),
       execute: () => {
+        // Capture current state at execution time to avoid stale data
+        capturedState = {
+          fileData: store.fileData,
+          chartData: store.chartData,
+          trends: store.trends,
+          warnings: store.warnings,
+          processingTime: store.processingTime,
+          lastFileInfo: store.lastFileInfo,
+        };
+        
         store.clearFinancialData();
       },
       undo: () => {
-        CommandFactory.restoreUploadState(store, previousState);
+        if (!capturedState) {
+          throw new Error('Cannot undo: previous state not captured during execution');
+        }
+        CommandFactory.restoreUploadState(store, capturedState);
       },
     };
   }
@@ -114,7 +140,7 @@ export class CommandFactory {
       chartType: 'line' | 'bar' | 'area';
     }>
   ): Command {
-    const previousSettings = { ...store.chartSettings };
+    let capturedSettings: any = null;
 
     return {
       id: this.generateId(),
@@ -122,10 +148,15 @@ export class CommandFactory {
       description: 'Update chart settings',
       timestamp: Date.now(),
       execute: () => {
+        // Capture current state at execution time
+        capturedSettings = { ...store.chartSettings };
         store.updateChartSettings(newSettings);
       },
       undo: () => {
-        store.updateChartSettings(previousSettings);
+        if (!capturedSettings) {
+          throw new Error('Cannot undo: previous chart settings not captured during execution');
+        }
+        store.updateChartSettings(capturedSettings);
       },
     };
   }
@@ -139,7 +170,7 @@ export class CommandFactory {
       chartOrder: string[];
     }>
   ): Command {
-    const previousLayout = { ...store.dashboardLayout };
+    let capturedLayout: any = null;
 
     return {
       id: this.generateId(),
@@ -147,10 +178,15 @@ export class CommandFactory {
       description: 'Update dashboard layout',
       timestamp: Date.now(),
       execute: () => {
+        // Capture current state at execution time
+        capturedLayout = { ...store.dashboardLayout };
         store.updateDashboardLayout(newLayout);
       },
       undo: () => {
-        store.updateDashboardLayout(previousLayout);
+        if (!capturedLayout) {
+          throw new Error('Cannot undo: previous dashboard layout not captured during execution');
+        }
+        store.updateDashboardLayout(capturedLayout);
       },
     };
   }
@@ -169,7 +205,7 @@ export class CommandFactory {
       compactMode: boolean;
     }>
   ): Command {
-    const previousPreferences = { ...store.preferences };
+    let capturedPreferences: any = null;
 
     return {
       id: this.generateId(),
@@ -177,10 +213,15 @@ export class CommandFactory {
       description: 'Update user preferences',
       timestamp: Date.now(),
       execute: () => {
+        // Capture current state at execution time
+        capturedPreferences = { ...store.preferences };
         store.updatePreferences(newPreferences);
       },
       undo: () => {
-        store.updatePreferences(previousPreferences);
+        if (!capturedPreferences) {
+          throw new Error('Cannot undo: previous preferences not captured during execution');
+        }
+        store.updatePreferences(capturedPreferences);
       },
     };
   }

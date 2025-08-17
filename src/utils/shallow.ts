@@ -25,10 +25,54 @@ export function shallow<T extends Record<string, any>>(
 }
 
 /**
- * Creates a selector that uses shallow comparison
- * This prevents re-renders when the selected object has the same properties
+ * Factory function that creates a shallow selector
+ * Each call returns a new selector instance with its own closure variables
+ * This prevents memory leaks and stale data from closure variable persistence
+ * 
+ * Usage:
+ * const shallowSelector = createShallowSelector<StoreState, SelectedData>();
+ * const selectData = shallowSelector((state) => ({ 
+ *   user: state.user, 
+ *   settings: state.settings 
+ * }));
  */
-export function createShallowSelector<T, U>(
+export function createShallowSelector<T, U>() {
+  return (selector: (state: T) => U) => {
+    let lastResult: U;
+    let lastState: T;
+    
+    return (state: T): U => {
+      if (state === lastState) {
+        return lastResult;
+      }
+      
+      const newResult = selector(state);
+      
+      if (lastResult && typeof newResult === 'object' && newResult !== null) {
+        if (shallow(lastResult as any, newResult as any)) {
+          return lastResult;
+        }
+      }
+      
+      lastState = state;
+      lastResult = newResult;
+      return newResult;
+    };
+  };
+}
+
+/**
+ * Direct shallow selector creator (legacy API)
+ * Creates a new selector instance with its own closure variables
+ * Recommended for one-off usage where you don't need a factory
+ * 
+ * Usage:
+ * const selectData = createShallowSelectorInstance((state) => ({ 
+ *   user: state.user, 
+ *   settings: state.settings 
+ * }));
+ */
+export function createShallowSelectorInstance<T, U>(
   selector: (state: T) => U
 ) {
   let lastResult: U;
