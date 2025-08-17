@@ -43,7 +43,7 @@ const getInitialState = (): Partial<AppStore> => ({
     failureCount: 0,
     lastFailureTime: null,
     nextAttemptTime: null,
-  } as any,
+  } as CircuitBreakerState,
 
   // Processing Metrics
   totalFilesProcessed: 0,
