@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import FileUploader from './file-uploader';
 import DataPreview from './data-preview';
@@ -7,19 +7,53 @@ import RevenueChart from './revenue-chart';
 import ProfitChart from './profit-chart';
 import ErrorDisplay from './error-display';
 import LoadingState from './loading-state';
+import { UndoRedoControls } from './undo-redo-controls';
 import { fileProcessingService } from '../services/file-processing.service';
 import { dataProcessingService } from '../services/data-processing.service';
 import { AppError, ErrorHandler } from '../utils/error-handling';
 import { CircuitState } from '../utils/circuit-breaker';
+import { 
+  useFinancialData, 
+  useUIState, 
+  useErrorState, 
+  useProcessingMetrics 
+} from '../store/store';
+import { CommandHelpers } from '../store/commands';
+
+// Helper function to check if value is a valid CircuitState
+function isCircuitState(value: any): value is CircuitState {
+  return Object.values(CircuitState).includes(value);
+}
 
 const FinancialApp: React.FC = () => {
-  const [fileData, setFileData] = useState<FinancialData | null>(null);
-  const [chartData, setChartData] = useState<ChartDataPoint[] | null>(null);
-  const [error, setError] = useState<AppError | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [trends, setTrends] = useState<TrendMetricsData | null>(null);
-  const [warnings, setWarnings] = useState<string[]>([]);
-  const [circuitBreakerState, setCircuitBreakerState] = useState<CircuitState>(CircuitState.CLOSED);
+  // Use Zustand store hooks instead of local state
+  const {
+    fileData,
+    chartData,
+    trends,
+    warnings,
+    processingTime,
+    lastFileInfo,
+    setWarnings,
+    clearFinancialData,
+  } = useFinancialData();
+
+  const {
+    loading,
+    setLoading,
+  } = useUIState();
+
+  const {
+    error,
+    circuitBreakerState,
+    setError,
+    clearError,
+    setCircuitBreakerState,
+  } = useErrorState();
+
+  const {
+    recordProcessingMetrics,
+  } = useProcessingMetrics();
 
   // Subscribe to error events
   useEffect(() => {
@@ -28,7 +62,7 @@ const FinancialApp: React.FC = () => {
     });
 
     return unsubscribe;
-  }, []);
+  }, [setError]);
 
   // Update circuit breaker state periodically
   useEffect(() => {
@@ -44,15 +78,15 @@ const FinancialApp: React.FC = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [setCircuitBreakerState]);
 
   const processFile = async (file: File) => {
     setLoading(true);
     setError(null);
-    setFileData(null);
-    setChartData(null);
-    setTrends(null);
+    clearFinancialData();
     setWarnings([]);
+
+    const startTime = Date.now();
 
     try {
       const result = await fileProcessingService.processFile(file);
@@ -67,10 +101,30 @@ const FinancialApp: React.FC = () => {
         marginGrowth: chartMetrics.trends.marginGrowth
       };
 
-      setFileData(result.data);
-      setChartData(result.chartData);
-      setTrends(calculatedTrends);
-      setWarnings(result.warnings);
+      const processingTime = Date.now() - startTime;
+      const fileInfo = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      };
+
+      // Use command pattern for undo/redo support
+      CommandHelpers.handleFileUpload(
+        result.data,
+        result.chartData,
+        calculatedTrends,
+        result.warnings,
+        processingTime,
+        fileInfo
+      );
+
+      // Record processing metrics
+      recordProcessingMetrics({
+        fileSize: file.size,
+        processingTime,
+        success: true,
+      });
 
       // Log success metrics
       console.log('File processed successfully:', {
@@ -82,6 +136,15 @@ const FinancialApp: React.FC = () => {
       });
 
     } catch (err) {
+      const processingTime = Date.now() - startTime;
+      
+      // Record failed processing metrics
+      recordProcessingMetrics({
+        fileSize: file.size,
+        processingTime,
+        success: false,
+      });
+
       if (err instanceof AppError) {
         setError(err);
       } else {
@@ -94,11 +157,11 @@ const FinancialApp: React.FC = () => {
   };
 
   const handleRetry = () => {
-    setError(null);
+    clearError();
   };
 
   const handleDismissError = () => {
-    setError(null);
+    clearError();
   };
 
   const handleFileUploaderError = (errorMessage: string) => {
@@ -108,6 +171,11 @@ const FinancialApp: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Financial Dashboard</h1>
+        <UndoRedoControls />
+      </div>
+      
       <FileUploader 
         onFileUpload={processFile} 
         onError={handleFileUploaderError}
