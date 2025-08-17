@@ -89,13 +89,16 @@ export const resetStore = (): void => {
 /**
  * Reset only specific store slices
  */
-export const resetStoreSlice = (slices: Array<keyof AppStore>): void => {
+export const resetStoreSlice = <K extends keyof AppStore>(slices: K[]): void => {
   const initialState = getInitialState();
-  const updates: Partial<AppStore> = {};
+  const updates: Partial<Pick<AppStore, K>> = {};
   
   slices.forEach(slice => {
     if (slice in initialState) {
-      (updates as any)[slice] = (initialState as any)[slice];
+      const value = initialState[slice];
+      if (value !== undefined) {
+        (updates as any)[slice] = value;
+      }
     }
   });
   

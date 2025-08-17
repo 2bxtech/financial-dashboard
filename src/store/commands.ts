@@ -1,6 +1,6 @@
 import { Command } from './types';
 import { FinancialData, ChartDataPoint, TrendMetricsData } from '../types';
-import { useAppStore } from './index';
+import type { AppStore } from './types';
 
 export class CommandFactory {
   private static generateId(): string {
@@ -8,7 +8,7 @@ export class CommandFactory {
   }
 
   // Helper method to restore upload state
-  private static restoreUploadState(store: any, state: any): void {
+  private static restoreUploadState(store: AppStore, state: any): void {
     if (state.fileData) {
       store.setFileData(state.fileData);
     } else {
@@ -36,6 +36,7 @@ export class CommandFactory {
 
   // File upload command
   static createFileUploadCommand(
+    store: AppStore,
     fileData: FinancialData,
     chartData: ChartDataPoint[],
     trends: TrendMetricsData,
@@ -48,8 +49,6 @@ export class CommandFactory {
       lastModified: number;
     }
   ): Command {
-    const store = useAppStore.getState();
-    
     // Capture current state for undo
     const previousState = {
       fileData: store.fileData,
@@ -80,9 +79,7 @@ export class CommandFactory {
   }
 
   // Clear data command
-  static createClearDataCommand(): Command {
-    const store = useAppStore.getState();
-    
+  static createClearDataCommand(store: AppStore): Command {
     // Capture current state for undo
     const previousState = {
       fileData: store.fileData,
@@ -109,6 +106,7 @@ export class CommandFactory {
 
   // Update chart settings command
   static createUpdateChartSettingsCommand(
+    store: AppStore,
     newSettings: Partial<{
       showGrid: boolean;
       showLegend: boolean;
@@ -116,7 +114,6 @@ export class CommandFactory {
       chartType: 'line' | 'bar' | 'area';
     }>
   ): Command {
-    const store = useAppStore.getState();
     const previousSettings = { ...store.chartSettings };
 
     return {
@@ -135,13 +132,13 @@ export class CommandFactory {
 
   // Update dashboard layout command
   static createUpdateDashboardLayoutCommand(
+    store: AppStore,
     newLayout: Partial<{
       showDataPreview: boolean;
       showTrendMetrics: boolean;
       chartOrder: string[];
     }>
   ): Command {
-    const store = useAppStore.getState();
     const previousLayout = { ...store.dashboardLayout };
 
     return {
@@ -160,6 +157,7 @@ export class CommandFactory {
 
   // Update user preferences command
   static createUpdatePreferencesCommand(
+    store: AppStore,
     newPreferences: Partial<{
       theme: 'light' | 'dark' | 'system';
       language: string;
@@ -171,7 +169,6 @@ export class CommandFactory {
       compactMode: boolean;
     }>
   ): Command {
-    const store = useAppStore.getState();
     const previousPreferences = { ...store.preferences };
 
     return {
@@ -190,6 +187,7 @@ export class CommandFactory {
 
   // Add comparison file command
   static createAddComparisonFileCommand(
+    store: AppStore,
     file: {
       id: string;
       name: string;
@@ -198,7 +196,6 @@ export class CommandFactory {
       uploadedAt: number;
     }
   ): Command {
-    const store = useAppStore.getState();
     const previousFiles = [...store.comparisonFiles];
 
     return {
@@ -216,9 +213,8 @@ export class CommandFactory {
   }
 
   // Remove comparison file command
-  static createRemoveComparisonFileCommand(fileId: string): Command {
-    const store = useAppStore.getState();
-    const fileToRemove = store.comparisonFiles.find(f => f.id === fileId);
+  static createRemoveComparisonFileCommand(store: AppStore, fileId: string): Command {
+    const fileToRemove = store.comparisonFiles.find((f: any) => f.id === fileId);
     const previousActiveComparison = store.activeComparison;
 
     if (!fileToRemove) {
@@ -261,10 +257,9 @@ export class CommandFactory {
 }
 
 // Helper functions for common command operations
-export const CommandHelpers = {
+export const createCommandHelpers = (store: AppStore) => ({
   // Execute command with undo/redo support
   executeWithUndo: (command: Command) => {
-    const store = useAppStore.getState();
     store.executeCommand(command);
   },
 
@@ -283,6 +278,7 @@ export const CommandHelpers = {
     }
   ) => {
     const command = CommandFactory.createFileUploadCommand(
+      store,
       fileData,
       chartData,
       trends,
@@ -290,30 +286,30 @@ export const CommandHelpers = {
       processingTime,
       fileInfo
     );
-    CommandHelpers.executeWithUndo(command);
+    store.executeCommand(command);
   },
 
   // Create and execute clear data command
   handleClearData: () => {
-    const command = CommandFactory.createClearDataCommand();
-    CommandHelpers.executeWithUndo(command);
+    const command = CommandFactory.createClearDataCommand(store);
+    store.executeCommand(command);
   },
 
   // Create and execute chart settings update
   handleChartSettingsUpdate: (settings: any) => {
-    const command = CommandFactory.createUpdateChartSettingsCommand(settings);
-    CommandHelpers.executeWithUndo(command);
+    const command = CommandFactory.createUpdateChartSettingsCommand(store, settings);
+    store.executeCommand(command);
   },
 
   // Create and execute dashboard layout update
   handleDashboardLayoutUpdate: (layout: any) => {
-    const command = CommandFactory.createUpdateDashboardLayoutCommand(layout);
-    CommandHelpers.executeWithUndo(command);
+    const command = CommandFactory.createUpdateDashboardLayoutCommand(store, layout);
+    store.executeCommand(command);
   },
 
   // Create and execute preferences update
   handlePreferencesUpdate: (preferences: any) => {
-    const command = CommandFactory.createUpdatePreferencesCommand(preferences);
-    CommandHelpers.executeWithUndo(command);
+    const command = CommandFactory.createUpdatePreferencesCommand(store, preferences);
+    store.executeCommand(command);
   },
-};
+});

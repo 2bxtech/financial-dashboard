@@ -186,9 +186,19 @@ export const useRemoveComparisonFile = () => useAppStore((state) => state.remove
 export const useSetActiveComparison = () => useAppStore((state) => state.setActiveComparison);
 export const useClearAllComparisons = () => useAppStore((state) => state.clearAllComparisons);
 
-// DEPRECATED: Legacy composed hooks for backward compatibility (will be removed)
-// Use individual selectors above instead to prevent re-renders
+// DEPRECATED: Legacy composed hooks for backward compatibility (will be removed soon)
+// WARNING: Using this hook will cause unnecessary re-renders and undermine performance optimizations.
+// Please migrate to individual selector hooks above. This hook will be removed in the next major release.
 export const useFinancialData = () => {
+  // Runtime deprecation warning
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      '[DEPRECATED] useFinancialData is deprecated and will be removed soon. ' +
+      'It creates a new object on every render, causing unnecessary re-renders. ' +
+      'Please use individual selector hooks instead.'
+    );
+  }
+  
   return useAppStore((state) => ({
     fileData: state.fileData,
     chartData: state.chartData,
@@ -327,3 +337,7 @@ export const StoreActions = {
     return DashboardConfig.export(state);
   },
 };
+
+// Create command helpers with store instance
+import { createCommandHelpers } from './commands';
+export const CommandHelpers = createCommandHelpers(useAppStore.getState());

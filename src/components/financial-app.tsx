@@ -30,7 +30,7 @@ import {
   useSetCircuitBreakerState,
   useRecordProcessingMetrics
 } from '../store';
-import { CommandHelpers } from '../store/commands';
+import { CommandHelpers } from '../store/index';
 
 const FinancialApp: React.FC = () => {
   // Use individual Zustand selectors to prevent unnecessary re-renders

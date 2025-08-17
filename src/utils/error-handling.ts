@@ -216,7 +216,11 @@ export async function withRetry<T>(
     ...config
   };
 
-  let lastError: Error = new Error('Unknown error');
+  if (typeof maxAttempts !== 'number' || maxAttempts <= 0) {
+    throw new Error('Invalid retry configuration: maxAttempts must be a positive integer.');
+  }
+
+  let lastError: Error | null = null;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
@@ -238,5 +242,5 @@ export async function withRetry<T>(
     }
   }
 
-  throw lastError ?? new Error('Operation failed after all retry attempts, but no error was captured.');
+  throw lastError ?? new Error('Operation failed after all retry attempts.');
 }

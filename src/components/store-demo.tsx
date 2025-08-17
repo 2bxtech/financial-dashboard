@@ -6,7 +6,7 @@ import {
   useUndoStack,
   useRedoStack
 } from '../store';
-import { CommandHelpers } from '../store/commands';
+import { CommandHelpers } from '../store/index';
 import { UndoRedoControls } from './undo-redo-controls';
 
 export const StoreDemo: React.FC = () => {
