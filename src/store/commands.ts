@@ -119,7 +119,12 @@ export class CommandFactory {
           lastFileInfo: store.lastFileInfo,
         };
         
-        store.clearFinancialData();
+        try {
+          store.clearFinancialData();
+        } catch (error) {
+          console.error('Failed to clear financial data:', error);
+          // Optionally, rethrow or handle error as needed
+        }
       },
       undo: () => {
         if (!capturedState) {
