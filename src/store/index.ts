@@ -204,6 +204,7 @@ export const useFinancialData = () => {
     setLastFileInfo: state.setLastFileInfo,
     clearFinancialData: state.clearFinancialData,
   }));
+};
 
 export const useUIState = () => {
   return useAppStore((state) => ({

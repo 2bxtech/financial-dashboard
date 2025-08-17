@@ -221,7 +221,11 @@ describe('File Processing Service', () => {
 
   it('should provide circuit breaker status', () => {
     const state = fileProcessingService.getCircuitBreakerState();
-    expect(typeof state).toBe('string');
+    expect(typeof state).toBe('object');
+    expect(state).toHaveProperty('isOpen');
+    expect(state).toHaveProperty('failureCount');
+    expect(state).toHaveProperty('lastFailureTime');
+    expect(state).toHaveProperty('state');
     
     const isOperational = fileProcessingService.isServiceOperational();
     expect(typeof isOperational).toBe('boolean');

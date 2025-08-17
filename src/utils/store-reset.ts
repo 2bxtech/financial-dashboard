@@ -6,6 +6,7 @@
 import { useAppStore } from '../store';
 import { AppStore } from '../store/types';
 import { AppError, ErrorType, ErrorSeverity } from './error-handling';
+import { CircuitState } from './circuit-breaker';
 
 /**
  * Initial state for the store
@@ -42,8 +43,8 @@ const getInitialState = (): Partial<AppStore> => ({
     isOpen: false,
     failureCount: 0,
     lastFailureTime: null,
-    nextAttemptTime: null,
-  } as CircuitBreakerState,
+    state: CircuitState.CLOSED,
+  },
 
   // Processing Metrics
   totalFilesProcessed: 0,

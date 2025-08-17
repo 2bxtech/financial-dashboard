@@ -66,14 +66,24 @@ export interface UIStateSlice {
 export interface ErrorStateSlice {
   error: AppError | null;
   errorHistory: AppError[];
-  circuitBreakerState: CircuitState;
+  circuitBreakerState: {
+    isOpen: boolean;
+    failureCount: number;
+    lastFailureTime: number | null;
+    state: CircuitState;
+  };
   
   // Actions
   setError: (error: AppError | null) => void;
   addToErrorHistory: (error: AppError) => void;
   clearError: () => void;
   clearErrorHistory: () => void;
-  setCircuitBreakerState: (state: CircuitState) => void;
+  setCircuitBreakerState: (state: {
+    isOpen: boolean;
+    failureCount: number;
+    lastFailureTime: number | null;
+    state: CircuitState;
+  }) => void;
 }
 
 // Processing metrics store slice

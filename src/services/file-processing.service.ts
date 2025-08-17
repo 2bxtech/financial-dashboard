@@ -222,8 +222,20 @@ class FileProcessingService {
     };
   }
 
-  getCircuitBreakerState(): CircuitState {
-    return this.circuitBreaker.getState();
+  getCircuitBreakerState(): {
+    isOpen: boolean;
+    failureCount: number;
+    lastFailureTime: number | null;
+    state: CircuitState;
+  } {
+    const state = this.circuitBreaker.getState();
+    const metrics = this.circuitBreaker.getMetrics();
+    return {
+      isOpen: state !== CircuitState.CLOSED,
+      failureCount: metrics.totalFailures,
+      lastFailureTime: metrics.lastFailureTime,
+      state: state,
+    };
   }
 
   isServiceOperational(): boolean {
