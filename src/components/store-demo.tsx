@@ -35,31 +35,31 @@ export const StoreDemo: React.FC = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-4">Zustand Store Demo with Undo/Redo</h2>
+      <div className="bg-card rounded-lg shadow-md p-6 border">
+        <h2 className="text-2xl font-bold mb-4 text-foreground">Settings Panel with Undo/Redo</h2>
         
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-lg font-semibold">Store Operations</h3>
+          <h3 className="text-lg font-semibold text-foreground">Application Settings</h3>
           <UndoRedoControls />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* User Preferences Section */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">User Preferences</h4>
+          <div className="border border-border rounded-lg p-4">
+            <h4 className="font-semibold mb-3 text-foreground">User Preferences</h4>
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Current Theme:</label>
-                <div className="text-sm text-gray-600">{preferences.theme}</div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Current Theme:</label>
+                <div className="text-sm text-muted-foreground">{preferences.theme}</div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Change Theme:</label>
+                <label className="block text-sm font-medium mb-1 text-foreground">Change Theme:</label>
                 <div className="flex space-x-2">
                   <select 
                     value={newTheme} 
                     onChange={(e) => setNewTheme(e.target.value as any)}
-                    className="border rounded px-2 py-1 text-sm"
+                    className="border border-border rounded px-2 py-1 text-sm bg-background text-foreground"
                   >
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
@@ -67,14 +67,14 @@ export const StoreDemo: React.FC = () => {
                   </select>
                   <button
                     onClick={handleUpdateTheme}
-                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600"
+                    className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
                   >
                     Update
                   </button>
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 <strong>Other Preferences:</strong><br />
                 Currency: {preferences.currency}<br />
                 Auto Save: {preferences.autoSave ? 'On' : 'Off'}<br />
@@ -84,21 +84,21 @@ export const StoreDemo: React.FC = () => {
           </div>
 
           {/* Chart Settings Section */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Chart Settings</h4>
+          <div className="border border-border rounded-lg p-4">
+            <h4 className="font-semibold mb-3 text-foreground">Chart Settings</h4>
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Current Chart Type:</label>
-                <div className="text-sm text-gray-600">{chartSettings.chartType}</div>
+                <label className="block text-sm font-medium mb-1 text-foreground">Current Chart Type:</label>
+                <div className="text-sm text-muted-foreground">{chartSettings.chartType}</div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium mb-1">Change Chart Type:</label>
+                <label className="block text-sm font-medium mb-1 text-foreground">Change Chart Type:</label>
                 <div className="flex space-x-2">
                   <select 
                     value={newChartType} 
                     onChange={(e) => setNewChartType(e.target.value as any)}
-                    className="border rounded px-2 py-1 text-sm"
+                    className="border border-border rounded px-2 py-1 text-sm bg-background text-foreground"
                   >
                     <option value="line">Line</option>
                     <option value="bar">Bar</option>
@@ -106,14 +106,14 @@ export const StoreDemo: React.FC = () => {
                   </select>
                   <button
                     onClick={handleUpdateChartType}
-                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600"
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors"
                   >
                     Update
                   </button>
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 <strong>Other Settings:</strong><br />
                 Show Grid: {chartSettings.showGrid ? 'Yes' : 'No'}<br />
                 Show Legend: {chartSettings.showLegend ? 'Yes' : 'No'}<br />
@@ -123,24 +123,24 @@ export const StoreDemo: React.FC = () => {
           </div>
 
           {/* Dashboard Layout Section */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Dashboard Layout</h4>
+          <div className="border border-border rounded-lg p-4">
+            <h4 className="font-semibold mb-3 text-foreground">Dashboard Layout</h4>
             <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium mb-1">Show Data Preview:</label>
-                <div className="text-sm text-gray-600">
+                <label className="block text-sm font-medium mb-1 text-foreground">Show Data Preview:</label>
+                <div className="text-sm text-muted-foreground">
                   {dashboardLayout.showDataPreview ? 'Visible' : 'Hidden'}
                 </div>
               </div>
               
               <button
                 onClick={handleToggleDataPreview}
-                className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600"
+                className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600 transition-colors"
               >
                 Toggle Data Preview
               </button>
 
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-muted-foreground">
                 <strong>Other Layout Settings:</strong><br />
                 Show Trend Metrics: {dashboardLayout.showTrendMetrics ? 'Yes' : 'No'}<br />
                 Chart Order: {dashboardLayout.chartOrder.join(', ')}
@@ -149,9 +149,9 @@ export const StoreDemo: React.FC = () => {
           </div>
 
           {/* Undo/Redo Status Section */}
-          <div className="border rounded-lg p-4">
-            <h4 className="font-semibold mb-3">Undo/Redo Status</h4>
-            <div className="space-y-2 text-sm">
+          <div className="border border-border rounded-lg p-4">
+            <h4 className="font-semibold mb-3 text-foreground">Undo/Redo Status</h4>
+            <div className="space-y-2 text-sm text-foreground">
               <div>
                 <strong>Undo Stack:</strong> {undoStack.length} operations
               </div>
@@ -160,14 +160,14 @@ export const StoreDemo: React.FC = () => {
               </div>
               
               {undoStack.length > 0 && (
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-muted-foreground">
                   <strong>Last operation:</strong><br />
                   {undoStack[undoStack.length - 1].description}
                 </div>
               )}
               
               {undoStack.length > 3 && (
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-muted-foreground">
                   <strong>Recent operations:</strong>
                   <ul className="list-disc list-inside mt-1">
                     {undoStack.slice(-3).map((cmd, index) => (
@@ -180,9 +180,9 @@ export const StoreDemo: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h4 className="font-semibold mb-2">Instructions:</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
+        <div className="mt-6 p-4 bg-muted rounded-lg">
+          <h4 className="font-semibold mb-2 text-foreground">Instructions:</h4>
+          <ul className="text-sm text-muted-foreground space-y-1">
             <li>• Make changes using the controls above</li>
             <li>• Use the Undo/Redo buttons to revert or reapply changes</li>
             <li>• All changes are automatically persisted to localStorage</li>

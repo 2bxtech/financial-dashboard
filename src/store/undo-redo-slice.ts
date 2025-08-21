@@ -30,7 +30,7 @@ export const createUndoRedoSlice: StateCreator<
         };
       });
     } catch (error) {
-      console.error('Failed to execute command:', command.description, error);
+      console.error('❌ Failed to execute command:', command.description, error);
     }
   },
 
@@ -49,7 +49,7 @@ export const createUndoRedoSlice: StateCreator<
         redoStack: [...state.redoStack, commandToUndo],
       }));
     } catch (error) {
-      console.error('Failed to undo command:', commandToUndo.description, error);
+      console.error('❌ Failed to undo command:', commandToUndo.description, error);
     }
   },
 
@@ -68,7 +68,7 @@ export const createUndoRedoSlice: StateCreator<
         redoStack: state.redoStack.slice(0, -1),
       }));
     } catch (error) {
-      console.error('Failed to redo command:', commandToRedo.description, error);
+      console.error('❌ Failed to redo command:', commandToRedo.description, error);
     }
   },
 

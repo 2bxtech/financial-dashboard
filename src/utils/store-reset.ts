@@ -83,7 +83,6 @@ const getInitialState = (): Partial<AppStore> => ({
 export const resetStore = (): void => {
   const initialState = getInitialState();
   useAppStore.setState(initialState);
-  console.log('Store reset to initial state');
 };
 
 /**
@@ -103,7 +102,6 @@ export const resetStoreSlice = <K extends keyof AppStore>(slices: K[]): void => 
   });
   
   useAppStore.setState(updates);
-  console.log(`Reset store slices: ${slices.join(', ')}`);
 };
 
 /**
@@ -139,8 +137,6 @@ export const resetStorageAndStore = (): void => {
   
   // Reset store
   resetStore();
-  
-  console.log('Cleared localStorage and reset store');
 };
 
 /**
@@ -162,7 +158,6 @@ export const restoreStoreFromSnapshot = (snapshot: string): boolean => {
     const parsed = JSON.parse(snapshot);
     if (parsed.state) {
       useAppStore.setState(parsed.state);
-      console.log('Store restored from snapshot');
       return true;
     }
   } catch (error) {

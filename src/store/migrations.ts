@@ -23,8 +23,6 @@ export const migrations: Record<number, MigrationFunction> = {
 
   // Version 1: Add user preferences with defaults
   1: (state: any, context: MigrationContext) => {
-    console.log(`Migrating store from v${context.previousVersion} to v1`);
-    
     return {
       ...state,
       preferences: state.preferences || {
@@ -64,8 +62,6 @@ export const migrations: Record<number, MigrationFunction> = {
 
   // Version 2: Add processing metrics tracking
   2: (state: any, context: MigrationContext) => {
-    console.log(`Migrating store from v${context.previousVersion} to v2`);
-    
     return {
       ...state,
       // Initialize metrics if not present
@@ -89,8 +85,6 @@ export const migrations: Record<number, MigrationFunction> = {
 
   // Version 3: Enhanced error handling and circuit breaker
   3: (state: any, context: MigrationContext) => {
-    console.log(`Migrating store from v${context.previousVersion} to v3`);
-    
     return {
       ...state,
       // Initialize error state if not present
@@ -115,8 +109,6 @@ export const migrations: Record<number, MigrationFunction> = {
 
   // Version 4: File comparison features
   4: (state: any, context: MigrationContext) => {
-    console.log(`Migrating store from v${context.previousVersion} to v4`);
-    
     return {
       ...state,
       // Initialize file comparison state
@@ -169,7 +161,6 @@ export const migrateStore = (state: any, fromVersion: number = 0): any => {
         context.previousVersion = version - 1;
         context.version = version;
         migratedState = migrations[version](migratedState, context);
-        console.log(`Successfully migrated to version ${version}`);
       } catch (error) {
         console.error(`Migration to version ${version} failed:`, error);
         // Continue with next migration to prevent total failure
@@ -277,7 +268,6 @@ export const restoreFromBackup = (version?: number): any | null => {
     
     if (targetKey) {
       const backup = JSON.parse(localStorage.getItem(targetKey) || '{}');
-      console.log(`Restored from backup: ${targetKey}`);
       return backup.state;
     }
   } catch (error) {

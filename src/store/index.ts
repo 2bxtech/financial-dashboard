@@ -235,4 +235,4 @@ export const StoreActions = {
 
 // Create command helpers with store instance
 import { createCommandHelpers } from './commands';
-export const CommandHelpers = createCommandHelpers(useAppStore.getState());
+export const CommandHelpers = createCommandHelpers(useAppStore.getState);

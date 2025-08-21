@@ -33,7 +33,7 @@ const TrendIndicator: React.FC<IndicatorProps> = ({
         <div className="text-2xl font-bold">
           {formattedValue}
         </div>
-        <p className="text-sm text-gray-500 mt-1">{description}</p>
+        <p className="text-sm text-muted-foreground mt-1">{description}</p>
       </CardContent>
     </Card>
   );

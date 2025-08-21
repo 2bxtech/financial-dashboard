@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import FileUploader from './file-uploader';
 import DataPreview from './data-preview';
@@ -8,6 +8,8 @@ import ProfitChart from './profit-chart';
 import ErrorDisplay from './error-display';
 import LoadingState from './loading-state';
 import { UndoRedoControls } from './undo-redo-controls';
+import { StoreDemo } from './store-demo';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { fileProcessingService } from '../services/file-processing.service';
 import { dataProcessingService } from '../services/data-processing.service';
 import { AppError, ErrorHandler } from '../utils/error-handling';
@@ -20,7 +22,6 @@ import {
   useProcessingTime,
   useLastFileInfo,
   useSetWarnings,
-  useClearFinancialData,
   useLoading,
   useSetLoading,
   useError,
@@ -28,11 +29,43 @@ import {
   useSetError,
   useClearError,
   useSetCircuitBreakerState,
-  useRecordProcessingMetrics
+  useRecordProcessingMetrics,
+  useDashboardLayout,
+  usePreferences,
+  useClearFinancialData
 } from '../store';
 import { CommandHelpers } from '../store/index';
 
 const FinancialApp: React.FC = () => {
+  const [showStoreDemo, setShowStoreDemo] = useState(false);
+
+  // Enable keyboard shortcuts for undo/redo
+  useKeyboardShortcuts({
+    enableUndoRedo: true,
+    enableSave: true,
+    customShortcuts: [
+      {
+        key: 'Delete',
+        ctrlKey: true,
+        action: () => {
+          if (fileData) {
+            CommandHelpers.handleClearData();
+          }
+        },
+        description: 'Clear all data'
+      },
+      {
+        key: 'd',
+        ctrlKey: true,
+        shiftKey: true,
+        action: () => {
+          setShowStoreDemo(!showStoreDemo);
+        },
+        description: 'Toggle store demo'
+      }
+    ]
+  });
+
   // Use individual Zustand selectors to prevent unnecessary re-renders
   const fileData = useFileData();
   const chartData = useChartData();
@@ -41,7 +74,6 @@ const FinancialApp: React.FC = () => {
   const processingTime = useProcessingTime();
   const lastFileInfo = useLastFileInfo();
   const setWarnings = useSetWarnings();
-  const clearFinancialData = useClearFinancialData();
 
   const loading = useLoading();
   const setLoading = useSetLoading();
@@ -53,6 +85,18 @@ const FinancialApp: React.FC = () => {
   const setCircuitBreakerState = useSetCircuitBreakerState();
 
   const recordProcessingMetrics = useRecordProcessingMetrics();
+  const dashboardLayout = useDashboardLayout();
+  const preferences = usePreferences();
+  const clearFinancialData = useClearFinancialData();
+
+  // Apply theme to document when preferences change
+  useEffect(() => {
+    if (preferences.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [preferences.theme]);
 
   // Subscribe to error events
   useEffect(() => {
@@ -76,7 +120,11 @@ const FinancialApp: React.FC = () => {
   const processFile = async (file: File) => {
     setLoading(true);
     setError(null);
-    clearFinancialData();
+    // Don't use command pattern for auto-clearing on upload - just clear directly
+    // This prevents polluting the undo stack with unnecessary clear commands
+    if (fileData) {
+      clearFinancialData();
+    }
     setWarnings([]);
 
     const startTime = Date.now();
@@ -154,10 +202,28 @@ const FinancialApp: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
+    <div className="container mx-auto p-4 space-y-6 min-h-screen transition-colors">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Financial Dashboard</h1>
-        <UndoRedoControls />
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowStoreDemo(!showStoreDemo)}
+            className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600 transition-colors"
+            title="Toggle settings panel to configure app and test undo/redo"
+          >
+            {showStoreDemo ? 'Hide Settings' : 'Show Settings'}
+          </button>
+          <UndoRedoControls />
+          {fileData && (
+            <button
+              onClick={() => CommandHelpers.handleClearData()}
+              className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600 transition-colors"
+              title="Clear all data (Ctrl+Delete)"
+            >
+              Clear Data
+            </button>
+          )}
+        </div>
       </div>
       
       <FileUploader 
@@ -182,9 +248,9 @@ const FinancialApp: React.FC = () => {
       />
 
       {warnings.length > 0 && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded p-4">
-          <h4 className="font-medium text-yellow-800">Processing Warnings:</h4>
-          <ul className="mt-2 text-sm text-yellow-700">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-4">
+          <h4 className="font-medium text-yellow-800 dark:text-yellow-200">Processing Warnings:</h4>
+          <ul className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
             {warnings.map((warning, index) => (
               <li key={index}>• {warning}</li>
             ))}
@@ -192,7 +258,7 @@ const FinancialApp: React.FC = () => {
         </div>
       )}
 
-      <DataPreview data={fileData} />
+      {dashboardLayout.showDataPreview && <DataPreview data={fileData} />}
       
       {chartData && (
         <>
@@ -200,9 +266,11 @@ const FinancialApp: React.FC = () => {
             <RevenueChart data={chartData} />
             <ProfitChart data={chartData} />
           </div>
-          {trends && <TrendMetrics trends={trends} />}
+          {dashboardLayout.showTrendMetrics && trends && <TrendMetrics trends={trends} />}
         </>
       )}
+      
+      {showStoreDemo && <StoreDemo />}
     </div>
   );
 };
