@@ -48,9 +48,9 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload, onError, load
             accept=".csv,.xlsx,.xls"
             onChange={handleDrop}
           />
-          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
           <p className="mt-2">Drag and drop a CSV or Excel file, or click to browse</p>
-          <p className="text-sm text-gray-500 mt-1">Supported formats: CSV, XLSX, XLS</p>
+          <p className="text-sm text-muted-foreground mt-1">Supported formats: CSV, XLSX, XLS</p>
         </label>
 
         {loading && (

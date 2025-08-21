@@ -22,10 +22,10 @@ const Button: React.FC<ButtonProps> = ({
   children, 
   ...props 
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
   const variantClasses = {
-    default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    outline: 'border border-input hover:bg-accent hover:text-accent-foreground',
+    default: 'bg-blue-500 text-white hover:bg-blue-600',
+    outline: 'border border-border bg-background text-foreground hover:bg-muted hover:text-foreground',
   };
   const sizeClasses = {
     sm: 'h-8 px-3 text-xs',
@@ -98,7 +98,7 @@ export const UndoRedoStatus: React.FC<UndoRedoStatusProps> = ({
   }
 
   return (
-    <div className="text-xs text-gray-500 space-y-1">
+    <div className="text-xs text-muted-foreground space-y-1">
       <div className="flex items-center space-x-4">
         <span>Undo Stack: {undoStack.length}</span>
         <span>Redo Stack: {redoStack.length}</span>

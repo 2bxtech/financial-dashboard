@@ -32,52 +32,84 @@ The application will be available at `http://localhost:5173/`
 
 ## 📋 Overview
 
-The Financial Dashboard is a web application that transforms spreadsheet data into charts and financial metrics. Built with React, TypeScript, and Zustand state management, it processes CSV and Excel files to display revenue, expenses, and profit trends with **enterprise-grade features** including data persistence, undo/redo functionality, and performance optimizations. Data processing is highly optimized for fast performance.
+A web application that processes CSV and Excel files to generate financial charts and basic metrics. Built with React, TypeScript, and Zustand for state management. Features include undo/redo functionality, chart customization, dark mode support, and client-side data processing for privacy.
 
-### 🎯 Key Benefits
+## 📱 Screenshots
 
-- **Simple Interface**: Drag-and-drop file upload with intuitive controls
-- **Fast Processing**: Immediate chart generation with optimized performance
-- **Reliable Error Handling**: Clear error messages and recovery options
-- **Privacy Focused**: All processing happens in your browser
-- **Multiple Formats**: Works with CSV and Excel files
-- **Data Persistence**: Settings and preferences automatically saved
-- **Undo/Redo Support**: Full command history with keyboard shortcuts
-- **Enterprise State Management**: Zustand store with performance optimizations
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/2d95d7f4-4d02-4f61-b733-cb1d6bfa5505" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/d6cba9a0-b72d-44b1-b37f-6f238ee444d0" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bbe0c873-db93-4741-b59e-2ed4dbadad4b" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/169160b1-068a-4486-8edc-1779b6888e33" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/80aa1869-8a5d-450a-8b8a-ebe2cd4b1b56" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/913eaef8-e050-410c-9ad7-33b1a85eb366" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/490bc14f-3c37-4e1f-8dbe-cb612cf0059e" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/00e29f79-2624-473b-b0a8-f98fef2c8aa9" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bc3c04a0-b6cf-4d7a-941c-c2759df6a1b4" />
+
+### 🎯 Key Features
+
+- Drag-and-drop file upload interface
+- Chart settings update components in real-time
+- Undo/redo operations with keyboard shortcuts
+- Dark mode with accessible color contrast
+- ~50ms processing time for typical files
+- Error handling with recovery suggestions
+- Client-side processing (no server required)
+- CSV and Excel file support
+- Settings panel with live configuration updates
+- Zustand state management with performance optimizations
 
 ## ✨ Features
 
 ### 📈 Data Visualization
-- **Interactive Charts**: Revenue vs expenses with responsive design
-- **Profit Tracking**: Margin calculations and trends with drill-down
-- **Advanced Metrics**: Growth rates and comprehensive financial ratios
-- **Trend Analysis**: Revenue consistency and expense pattern recognition
+- Revenue vs expenses charts with configurable types (Line, Bar, Area)
+- Chart type switching with live updates
+- Grid lines and legend toggle controls
+- Profit margin calculations and trend display
+- Basic growth rate and financial ratio calculations
+- Revenue consistency and expense pattern analysis
+- Dark mode chart rendering with appropriate color schemes
 
 ### 🔧 Technical Features
-- **File Support**: CSV and Excel (.xlsx) processing with validation
-- **Data Validation**: Input validation with helpful error messages
-- **Error Recovery**: Circuit breaker pattern for reliable processing
-- **Type Safety**: TypeScript for better code quality and development experience
-- **Fast Processing**: Optimized performance, typically ~50ms for most files
-- **State Management**: Zustand store with persistence and undo/redo
-- **Performance Monitoring**: Built-in performance tracking and optimization
+- CSV and Excel (.xlsx) file parsing with validation
+- Input validation with error messages
+- Circuit breaker pattern for error handling
+- TypeScript for type safety
+- Performance optimization (~50ms typical processing)
+- Zustand state management with persistence and undo/redo
+- Performance monitoring and tracking
+- Chart settings integrate with UI components
 
 ### 🎨 User Interface
-- **File Upload**: Drag & drop or click to upload with progress indicators
-- **Data Feedback**: Shows processing status and validation results
-- **Modern Design**: Built with Tailwind CSS and Shadcn/UI components
-- **Error Display**: Clear messages with recovery suggestions
-- **Mobile Friendly**: Responsive design for all screen sizes
-- **Keyboard Shortcuts**: Full keyboard navigation support
-- **Undo/Redo Controls**: Visual controls with operation descriptions
+- Drag & drop file upload with progress indicators
+- Processing status and validation feedback with data preview
+- Tailwind CSS and Shadcn/UI components
+- Dark theme with semantic color system and accessible contrast
+- Error messages with recovery suggestions
+- Responsive design for mobile and desktop
+- Keyboard shortcuts for common operations
+- Settings panel with real-time configuration
+- Undo/redo controls with operation history
 
-### 🚀 Enterprise Features
-- **Data Persistence**: Automatic saving of user preferences and settings
-- **Undo/Redo System**: Complete command history with 50-operation memory
-- **Storage Management**: Intelligent localStorage with quota monitoring
-- **Performance Optimization**: Zero unnecessary re-renders with optimized selectors
-- **Development Tools**: Redux DevTools integration and performance monitoring
-- **Migration System**: Version-safe store updates with rollback support
+### 🚀 State Management
+- Undo/redo system with 50-operation memory and keyboard shortcuts
+- Chart settings update all components when changed
+- Dark mode implementation with semantic color system
+- User preferences and settings persistence to localStorage
+- Settings panel with real-time UI updates
+- CSS variables for consistent light/dark theming
+- localStorage quota monitoring and management
+- Individual Zustand selectors to prevent unnecessary re-renders
+- Redux DevTools integration for debugging
+- Store migration system for version updates
 
 ## 🏗️ Architecture
 
@@ -154,14 +186,16 @@ The application follows standard React patterns with TypeScript:
 - **Lodash**: Utility functions for efficient data manipulation
 
 #### Quality & Testing
-- **Jest**: Comprehensive testing framework (59/59 tests passing)
+- **Jest**: Comprehensive testing framework (195/195 tests passing)
 - **Testing Library**: React component testing with accessibility focus
 - **ESLint**: Code quality and consistency enforcement
 - **TypeScript Strict Mode**: Enhanced type safety with zero any types
 
 #### UI/UX Libraries
-- **Shadcn/UI**: Modern, accessible component library with dark mode
-- **Lucide React**: Beautiful, customizable icon system
+- **Shadcn/UI**: Modern, accessible component library with complete dark mode support
+- **Tailwind CSS v3**: Class-based dark mode with CSS variables for semantic theming
+- **Lucide React**: Beautiful, customizable icon system with theme-aware colors
+- **CSS Variables**: Semantic color system for consistent light/dark mode theming
 - **Immer**: Immutable state updates with developer-friendly syntax
 - **Performance Utilities**: Custom shallow comparison and optimization tools
 
@@ -170,19 +204,24 @@ The application follows standard React patterns with TypeScript:
 ```
 src/
 ├── components/           # React components
-│   ├── ui/              # Reusable UI components (Shadcn/UI)
+│   ├── ui/              # Reusable UI components (Shadcn/UI with dark mode)
 │   ├── error-display.tsx    # Error handling components
 │   ├── loading-state.tsx    # Loading indicators
-│   ├── financial-app.tsx    # Main application component
-│   ├── undo-redo-controls.tsx # Undo/redo UI controls
-│   ├── store-demo.tsx       # Interactive store demonstration
-│   └── __tests__/       # Component tests
+│   ├── financial-app.tsx    # Main application component with keyboard shortcuts
+│   ├── undo-redo-controls.tsx # Undo/redo UI controls with dark mode support
+│   ├── store-demo.tsx       # Interactive Settings Panel with real-time updates
+│   ├── data-preview.tsx     # Data table with dark mode support
+│   ├── revenue-chart.tsx    # Revenue chart with live settings integration
+│   ├── profit-chart.tsx     # Profit chart with live settings integration
+│   ├── trend-metrics.tsx    # Metrics display with dark mode support
+│   ├── file-uploader.tsx    # File upload with enhanced UI
+│   └── __tests__/       # Component tests (comprehensive coverage)
 ├── store/               # Zustand state management
 │   ├── index.ts         # Main store with individual selectors
 │   ├── types.ts         # TypeScript interfaces for all slices
-│   ├── commands.ts      # Command pattern for undo/redo
+│   ├── commands.ts      # Command pattern for undo/redo (fixed live store access)
 │   ├── migrations.ts    # Store version migration system
-│   ├── *-slice.ts       # Modular store slices (7 total)
+│   ├── *-slice.ts       # Modular store slices (7 total with enhanced features)
 │   └── __tests__/       # Store functionality tests
 ├── services/            # Business logic layer
 │   ├── interfaces/      # Service contracts
@@ -204,7 +243,7 @@ src/
 │   ├── shallow.ts           # Performance optimization utilities
 │   └── store-reset.ts       # Development utilities
 ├── hooks/               # Custom React hooks
-│   └── useKeyboardShortcuts.ts # Global keyboard shortcuts
+│   └── useKeyboardShortcuts.ts # Global keyboard shortcuts (comprehensive)
 ├── types/               # TypeScript definitions
 └── assets/              # Static resources
 ```
@@ -213,7 +252,7 @@ src/
 
 ### Zustand Store Architecture
 
-Enterprise-grade state management with modular architecture:
+State management with modular store structure:
 
 ```typescript
 // Store Structure (7 specialized slices)
@@ -249,7 +288,7 @@ interface AppStore {
 
 ### Command Pattern & Undo/Redo
 
-Comprehensive undo/redo system with 50-operation history:
+Undo/redo system with 50-operation history:
 
 ```typescript
 interface Command {
@@ -261,16 +300,17 @@ interface Command {
   description: string;
 }
 
-// Supported operations
-- File upload/clear operations
-- Settings changes (theme, chart type, layout)
-- Dashboard configuration updates
-- User preference modifications
+// Supported operations with full undo/redo
+- File upload/clear operations (with smart state capture)
+- Settings changes (theme, chart type, grid, legend)
+- Dashboard configuration updates with real-time feedback
+- User preference modifications with instant UI updates
+- Theme switching with complete dark/light mode support
 ```
 
 ### Performance Optimizations
 
-Zero unnecessary re-renders with individual selectors:
+Individual selectors to prevent unnecessary re-renders:
 
 ```typescript
 // Individual selectors prevent object recreation
@@ -289,31 +329,41 @@ export const createShallowSelector = (selector) => {
 
 ### Data Persistence System
 
-Smart localStorage with selective persistence:
+localStorage integration with selective persistence:
 
 **Persisted Data:**
-- User preferences (theme, currency, settings)
-- Chart settings (type, grid, legend preferences)  
-- Dashboard layout (component visibility, order)
-- Processing metrics (performance history)
-- File comparison data
+- User preferences (theme, currency, advanced settings)
+- Chart settings (type, grid, legend preferences with real-time sync)  
+- Dashboard layout (component visibility, order, configuration)
+- Processing metrics (performance history and analytics)
+- File comparison data and user workflows
 
 **Non-Persisted Data:**
-- Current file data (session-only)
-- Loading states (UI state)
-- Error states (temporary)
-- Undo/redo stacks (memory-only)
+- Current file data (session-only for privacy)
+- Loading states and UI transient state
+- Error states (temporary with recovery options)
+- Undo/redo stacks (memory-only, 50-operation limit)
 
 ### Keyboard Shortcuts
 
-Global keyboard shortcuts for enhanced productivity:
+Available keyboard shortcuts:
 
-- `Ctrl+Z` / `Cmd+Z` - Undo
-- `Ctrl+Shift+Z` / `Cmd+Shift+Z` - Redo  
+**Core Actions:**
+- `Ctrl+Z` / `Cmd+Z` - Undo last operation
+- `Ctrl+Shift+Z` / `Cmd+Shift+Z` - Redo operation  
 - `Ctrl+Y` / `Cmd+Y` - Redo (alternative)
-- `Ctrl+S` / `Cmd+S` - Save/Export
-- `Ctrl+O` / `Cmd+O` - Open file
-- `Escape` - Close modals
+- `Ctrl+Delete` - Clear all data (undoable)
+
+**Application Controls:**
+- `Ctrl+Shift+D` / `Cmd+Shift+D` - Toggle dark/light theme
+- `Ctrl+S` / `Cmd+S` - Save/Export (when available)
+- `Ctrl+O` / `Cmd+O` - Open file dialog
+- `Escape` - Close modals and dialogs
+
+**Chart & Dashboard:**
+- Live chart type switching through Settings Panel
+- Grid and legend toggles with immediate visual feedback
+- Theme changes apply instantly to all components
 
 ### Circuit Breaker Pattern
 
@@ -347,7 +397,7 @@ class AppError extends Error {
 
 ### Data Processing Features
 
-Basic financial calculations and metrics:
+Financial calculations and metrics:
 
 - **Revenue Tracking**: Monthly revenue totals and trends
 - **Expense Analysis**: Cost tracking and spending patterns  
@@ -358,10 +408,9 @@ Basic financial calculations and metrics:
 
 ### Test Coverage
 ```
-✅ Test Suites: 8 passed, 8 total
-✅ Tests: 59 passed, 59 total  
+✅ Test Suites: 12 passed, 12 total
+✅ Tests: 195 passed, 195 total  
 ✅ Coverage: Comprehensive coverage including store functionality
-✅ New Features: 14 additional tests for state management
 ```
 
 ### Test Categories
@@ -414,47 +463,50 @@ Date,Revenue,Expenses,Department,Region,Product Category
 
 ## 🚀 Performance
 
-### What to Expect
-- **Processing Time**: Optimized to ~50ms for typical files (20-60 rows)
-- **Memory Usage**: Efficient memory management with bounded histories
-- **File Size**: Handles small to medium spreadsheets with performance monitoring
-- **Load Time**: Fast startup with state hydration from localStorage
-- **Re-render Optimization**: Zero unnecessary re-renders with individual selectors
-- **Storage Management**: Automatic cleanup when quota exceeds 85%
+### Metrics
+- Processing time: ~50ms for typical files (20-60 rows)
+- Memory management with bounded operation histories
+- Handles small to medium spreadsheets with monitoring
+- Fast startup with localStorage state hydration
+- Individual selectors prevent unnecessary re-renders
+- Automatic storage cleanup when quota exceeds 85%
 
-### Technical Details
-- **Client-side Processing**: No server required for data processing
-- **File Parsing**: Uses established libraries (PapaParse, ExcelJS)
-- **Chart Rendering**: Recharts for responsive data visualization
-- **Bundle Optimization**: Code splitting and tree shaking enabled
-- **State Persistence**: Smart localStorage with migration system
-- **Performance Monitoring**: Built-in development performance tracking
-- **Memory Management**: Bounded command history and automatic cleanup
+### Technical Implementation
+- Client-side processing (no server required)
+- File parsing with PapaParse and ExcelJS libraries
+- Recharts for chart rendering
+- Code splitting and tree shaking enabled
+- localStorage with migration system
+- Development performance tracking
+- Bounded command history with automatic cleanup
 
 ## 🎯 Target Audience
 
-### Primary Users
-- **Small to Medium Business Owners**: Quick financial insights and reporting
-- **Financial Analysts**: Rapid data visualization from spreadsheets
-- **Accountants & Bookkeepers**: Regular financial data analysis
-- **Business Consultants**: Client presentation and trend analysis
+### Users
+- Small to medium business owners needing financial reporting
+- Financial analysts doing rapid data visualization
+- Accountants and bookkeepers analyzing financial data
+- Business consultants preparing client presentations
 
 ### Use Cases
-- Monthly/quarterly financial review meetings
-- Profit margin analysis and optimization
-- Revenue trend identification and forecasting
-- Expense tracking and cost management
-- Investment pitch deck preparation
+- Monthly/quarterly financial reviews
+- Profit margin analysis
+- Revenue trend identification
+- Expense tracking
+- Investment presentation preparation
 
 ## 🔮 Future Plans
 
 ### Next Features
 - [ ] Export charts as images or PDFs with settings persistence
 - [ ] Advanced analytics dashboard with performance metrics
-- [ ] Plugin architecture for custom calculations
-- [ ] Multi-file comparison with visual diff tools
-- [ ] Real-time collaboration features
-- [ ] API integration with automatic sync
+- [ ] Plugin architecture for custom calculations and chart types
+- [ ] Multi-file comparison with visual diff tools and enhanced UI
+- [ ] Real-time collaboration features with shared workspaces
+- [ ] API integration with automatic sync and external data sources
+- [ ] Enhanced keyboard shortcuts for power users
+- [ ] Custom chart themes and color schemes
+- [ ] Advanced data filtering and search capabilities
 
 ### Possible Improvements
 - [ ] Enhanced data export functionality with format options
@@ -485,28 +537,20 @@ npm test
 ```
 
 ### Code Standards
-- **TypeScript**: All new code must be TypeScript
-- **Testing**: Include tests for new features
-- **Documentation**: Update README and inline docs
-- **Linting**: Code must pass ESLint checks
+- TypeScript required for all new code
+- Include tests for new features
+- Update documentation for changes
+- Code must pass ESLint checks
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ## 🙏 Acknowledgments
 
-- **React Team**: For the excellent framework
-- **TypeScript Team**: For static type safety
-- **Vite Team**: For blazing fast build tools
-- **Tailwind CSS**: For utility-first styling
-- **Shadcn**: For beautiful, accessible components
+- React Team for the framework
+- TypeScript Team for static type safety
+- Vite Team for build tools
+- Tailwind CSS for utility-first styling
+- Shadcn for accessible components
 
 ---
-
-<div align="center">
-
-**Built with ❤️ by 2bxtech**
-
-[Documentation](https://github.com/2bxtech/financial-dashboard/wiki)
-
-</div>

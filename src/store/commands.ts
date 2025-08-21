@@ -109,27 +109,32 @@ export class CommandFactory {
       description: 'Clear all financial data',
       timestamp: Date.now(),
       execute: () => {
-        // Capture current state at execution time to avoid stale data
-        capturedState = {
-          fileData: store.fileData,
-          chartData: store.chartData,
-          trends: store.trends,
-          warnings: store.warnings,
-          processingTime: store.processingTime,
-          lastFileInfo: store.lastFileInfo,
-        };
+        // Only capture state if there's actually data to clear
+        const hasData = !!(store.fileData || store.chartData || store.trends);
+        
+        if (hasData) {
+          // Capture current state at execution time to avoid stale data
+          capturedState = {
+            fileData: store.fileData,
+            chartData: store.chartData,
+            trends: store.trends,
+            warnings: store.warnings,
+            processingTime: store.processingTime,
+            lastFileInfo: store.lastFileInfo,
+          };
+        }
         
         try {
           store.clearFinancialData();
         } catch (error) {
           console.error('Failed to clear financial data:', error);
-          // Optionally, rethrow or handle error as needed
         }
       },
       undo: () => {
         if (!capturedState) {
-          throw new Error('Cannot undo: previous state not captured during execution');
+          return;
         }
+        
         CommandFactory.restoreUploadState(store, capturedState);
       },
     };
@@ -303,9 +308,10 @@ export class CommandFactory {
 }
 
 // Helper functions for common command operations
-export const createCommandHelpers = (store: AppStore) => ({
+export const createCommandHelpers = (getStore: () => AppStore) => ({
   // Execute command with undo/redo support
   executeWithUndo: (command: Command) => {
+    const store = getStore();
     store.executeCommand(command);
   },
 
@@ -323,6 +329,7 @@ export const createCommandHelpers = (store: AppStore) => ({
       lastModified: number;
     }
   ) => {
+    const store = getStore();
     const command = CommandFactory.createFileUploadCommand(
       store,
       fileData,
@@ -337,24 +344,28 @@ export const createCommandHelpers = (store: AppStore) => ({
 
   // Create and execute clear data command
   handleClearData: () => {
+    const store = getStore();
     const command = CommandFactory.createClearDataCommand(store);
     store.executeCommand(command);
   },
 
   // Create and execute chart settings update
   handleChartSettingsUpdate: (settings: any) => {
+    const store = getStore();
     const command = CommandFactory.createUpdateChartSettingsCommand(store, settings);
     store.executeCommand(command);
   },
 
   // Create and execute dashboard layout update
   handleDashboardLayoutUpdate: (layout: any) => {
+    const store = getStore();
     const command = CommandFactory.createUpdateDashboardLayoutCommand(store, layout);
     store.executeCommand(command);
   },
 
   // Create and execute preferences update
   handlePreferencesUpdate: (preferences: any) => {
+    const store = getStore();
     const command = CommandFactory.createUpdatePreferencesCommand(store, preferences);
     store.executeCommand(command);
   },

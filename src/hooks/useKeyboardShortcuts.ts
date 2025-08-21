@@ -64,14 +64,12 @@ export const useKeyboardShortcuts = (options: KeyboardShortcutsOptions = {}) => 
       if (enableSave && isModifier && key.toLowerCase() === 's') {
         event.preventDefault();
         // Trigger save action (could be export or save state)
-        console.log('Save shortcut triggered');
         return;
       }
 
       // Refresh/Reload shortcut (F5 or Ctrl+R / Cmd+R)
       if (enableRefresh && (key === 'F5' || (isModifier && key.toLowerCase() === 'r'))) {
         // Let the default refresh behavior happen, but could add custom logic here
-        console.log('Refresh shortcut triggered');
         return;
       }
 
@@ -195,31 +193,31 @@ export const ShortcutPresets = {
     {
       key: '1',
       ctrlKey: true,
-      action: () => console.log('Switch to line chart'),
+      action: () => {}, // TODO: Implement chart type switching
       description: 'Switch to line chart'
     },
     {
       key: '2',
       ctrlKey: true,
-      action: () => console.log('Switch to bar chart'),
+      action: () => {}, // TODO: Implement chart type switching
       description: 'Switch to bar chart'
     },
     {
       key: '3',
       ctrlKey: true,
-      action: () => console.log('Switch to area chart'),
+      action: () => {}, // TODO: Implement chart type switching
       description: 'Switch to area chart'
     },
     {
       key: 'g',
       ctrlKey: true,
-      action: () => console.log('Toggle grid'),
+      action: () => {}, // TODO: Implement grid toggle
       description: 'Toggle grid'
     },
     {
       key: 'l',
       ctrlKey: true,
-      action: () => console.log('Toggle legend'),
+      action: () => {}, // TODO: Implement legend toggle
       description: 'Toggle legend'
     }
   ],
@@ -234,7 +232,7 @@ export const ShortcutPresets = {
       shiftKey: true,
       action: () => {
         // Toggle dev tools or debug info
-        console.log('Development shortcut triggered');
+        // TODO: Implement debug info toggle
       },
       description: 'Toggle debug info'
     },

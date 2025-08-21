@@ -15,30 +15,30 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
         <CardTitle>Data Preview</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
           Showing first 5 rows of {data.totalRows} total rows
         </p>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full divide-y divide-border">
             <thead>
               <tr>
                 {data.headers.map((header: string) => (
                   <th
                     key={header}
-                    className="px-4 py-2 bg-gray-50 text-left text-sm font-medium text-gray-500"
+                    className="px-4 py-2 bg-muted text-left text-sm font-medium text-muted-foreground"
                   >
                     {header}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-border">
               {data.rows.map((row: Record<string, any>, rowIndex: number) => (
                 <tr key={rowIndex}>
                   {data.headers.map((header: string) => (
                     <td
                       key={header}
-                      className="px-4 py-2 text-sm text-gray-900 whitespace-nowrap"
+                      className="px-4 py-2 text-sm text-foreground whitespace-nowrap"
                     >
                       {row[header]?.toString() || ''}
                     </td>
