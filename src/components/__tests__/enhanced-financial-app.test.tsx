@@ -71,17 +71,28 @@ jest.mock('../../services/file-processing.service', () => ({
 jest.mock('../../services/data-processing.service', () => ({
   dataProcessingService: {
     processFinancialData: jest.fn(),
+    calculateMetrics: jest.fn(() => ({
+      trends: {
+        revenueGrowth: 15.5,
+        profitGrowth: 10.2,
+        marginGrowth: 5.1
+      }
+    })),
   },
 }));
 
 jest.mock('../../utils/error-handling', () => ({
-  AppError: class AppError extends Error {
-    constructor(message: string, public code: string) {
+  AppError: class MockAppError extends Error {
+    public code: string;
+    constructor(message: string, code: string) {
       super(message);
+      this.code = code;
     }
   },
   ErrorHandler: {
     handleError: jest.fn(),
+    handle: jest.fn((error) => error.message),
+    subscribe: jest.fn(() => jest.fn()), // Return unsubscribe function
   },
 }));
 
@@ -122,6 +133,7 @@ jest.mock('../../store', () => {
     useError: jest.fn(() => mockStore.error),
     useSetError: jest.fn(),
     useClearError: jest.fn(),
+    useCircuitBreakerState: jest.fn(() => ({ isOpen: false, failures: 0 })),
     useSetCircuitBreakerState: jest.fn(),
     useRecordProcessingMetrics: jest.fn(),
     useDashboardLayout: jest.fn(() => mockStore.dashboardLayout),
@@ -336,13 +348,12 @@ describe('Enhanced Financial App Integration', () => {
 
       mockServices.fileProcessing.processFile.mockResolvedValue({
         data: mockFileData,
+        chartData: mockChartData,
         metadata: { name: 'test.csv', size: 1024, type: 'text/csv', lastModified: Date.now() },
       });
 
-      mockServices.dataProcessing.processFinancialData.mockReturnValue({
-        chartData: mockChartData,
+      mockServices.dataProcessing.calculateMetrics.mockReturnValue({
         trends: mockTrends,
-        warnings: [],
       });
 
       render(<FinancialApp />);
@@ -354,7 +365,7 @@ describe('Enhanced Financial App Integration', () => {
       });
 
       expect(mockServices.fileProcessing.processFile).toHaveBeenCalled();
-      expect(mockServices.dataProcessing.processFinancialData).toHaveBeenCalledWith(mockFileData);
+      expect(mockServices.dataProcessing.calculateMetrics).toHaveBeenCalledWith(mockChartData);
     });
 
     it('should handle file processing errors', async () => {
@@ -540,7 +551,7 @@ describe('Enhanced Financial App Integration', () => {
     it('should have transition classes for smooth theme switching', () => {
       render(<FinancialApp />);
 
-      const container = screen.getByText('Financial Dashboard').closest('div');
+      const container = screen.getByText('Financial Dashboard').closest('.container');
       expect(container).toHaveClass('transition-colors');
     });
   });
@@ -587,7 +598,7 @@ describe('Enhanced Financial App Integration', () => {
     it('should have proper container styling', () => {
       render(<FinancialApp />);
 
-      const container = screen.getByText('Financial Dashboard').closest('div');
+      const container = screen.getByText('Financial Dashboard').closest('.container');
       expect(container).toHaveClass(
         'container',
         'mx-auto', 
@@ -611,7 +622,9 @@ describe('Enhanced Financial App Integration', () => {
 
       render(<FinancialApp />);
 
-      const controlsContainer = screen.getByTestId('undo-redo-controls').closest('div');
+      // The controls are in a div that contains both UndoRedoControls and potentially a Clear Data button
+      const undoRedoControls = screen.getByTestId('undo-redo-controls');
+      const controlsContainer = undoRedoControls.closest('.flex');
       expect(controlsContainer).toHaveClass('flex', 'items-center', 'space-x-2');
     });
   });

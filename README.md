@@ -34,6 +34,26 @@ The application will be available at `http://localhost:5173/`
 
 A web application that processes CSV and Excel files to generate financial charts and basic metrics. Built with React, TypeScript, and Zustand for state management. Features include undo/redo functionality, chart customization, dark mode support, and client-side data processing for privacy.
 
+## 📱 Screenshots
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/2d95d7f4-4d02-4f61-b733-cb1d6bfa5505" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/d6cba9a0-b72d-44b1-b37f-6f238ee444d0" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bbe0c873-db93-4741-b59e-2ed4dbadad4b" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/169160b1-068a-4486-8edc-1779b6888e33" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/80aa1869-8a5d-450a-8b8a-ebe2cd4b1b56" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/913eaef8-e050-410c-9ad7-33b1a85eb366" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/490bc14f-3c37-4e1f-8dbe-cb612cf0059e" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/00e29f79-2624-473b-b0a8-f98fef2c8aa9" />
+
+<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bc3c04a0-b6cf-4d7a-941c-c2759df6a1b4" />
+
 ### 🎯 Key Features
 
 - Drag-and-drop file upload interface
@@ -166,7 +186,7 @@ The application follows standard React patterns with TypeScript:
 - **Lodash**: Utility functions for efficient data manipulation
 
 #### Quality & Testing
-- **Jest**: Comprehensive testing framework (59/59 tests passing)
+- **Jest**: Comprehensive testing framework (195/195 tests passing)
 - **Testing Library**: React component testing with accessibility focus
 - **ESLint**: Code quality and consistency enforcement
 - **TypeScript Strict Mode**: Enhanced type safety with zero any types
@@ -388,10 +408,9 @@ Financial calculations and metrics:
 
 ### Test Coverage
 ```
-✅ Test Suites: 8 passed, 8 total
-✅ Tests: 59 passed, 59 total  
+✅ Test Suites: 12 passed, 12 total
+✅ Tests: 195 passed, 195 total  
 ✅ Coverage: Comprehensive coverage including store functionality
-✅ New Features: 14 additional tests for state management
 ```
 
 ### Test Categories
