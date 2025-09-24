@@ -1,6 +1,7 @@
 export interface FinancialData {
     headers: string[];
-    rows: Record<string, any>[];
+    rows: Record<string, any>[]; // Preview rows (first 5)
+    fullRows?: Record<string, any>[]; // Complete dataset for exports (optional for backward compatibility)
     totalRows: number;
   }
   

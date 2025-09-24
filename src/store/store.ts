@@ -8,6 +8,7 @@ import { createProcessingMetricsSlice } from './processing-metrics-slice';
 import { createUndoRedoSlice } from './undo-redo-slice';
 import { createUserPreferencesSlice } from './user-preferences-slice';
 import { createFileComparisonSlice } from './file-comparison-slice';
+import { createExportSlice } from './export-slice';
 
 // Define which state should be persisted
 const persistedKeys: (keyof AppStore)[] = [
@@ -21,6 +22,9 @@ const persistedKeys: (keyof AppStore)[] = [
   'successfulUploads',
   'failedUploads',
   'comparisonFiles',
+  'exportPreferences',
+  'exportHistory',
+  'lastExportSettings',
 ];
 
 // Custom partialize function to control what gets persisted
@@ -49,12 +53,21 @@ export const useAppStore = create<AppStore>()(
         ...(createUndoRedoSlice as any)(set, get, api),
         ...(createUserPreferencesSlice as any)(set, get, api),
         ...(createFileComparisonSlice as any)(set, get, api),
+        ...(createExportSlice as any)(set, get, api),
       })
     ),
     {
       name: 'financial-dashboard-store',
       partialize,
       version: 1,
+      migrate: (persistedState: any, version: number) => {
+        // Handle migration between different store versions
+        if (version === 0) {
+          // Migration from version 0 to 1 - no changes needed for now
+          return persistedState;
+        }
+        return persistedState;
+      },
       onRehydrateStorage: () => (state) => {
         if (state) {
           console.log('Store rehydrated successfully');
@@ -223,6 +236,34 @@ export const useFileComparison = () => {
     removeComparisonFile,
     setActiveComparison,
     clearAllComparisons,
+  };
+};
+
+export const useExport = () => {
+  const exportHistory = useAppStore((state) => state.exportHistory);
+  const isExporting = useAppStore((state) => state.isExporting);
+  const exportProgress = useAppStore((state) => state.exportProgress);
+  const exportPreferences = useAppStore((state) => state.exportPreferences);
+  const lastExportSettings = useAppStore((state) => state.lastExportSettings);
+  const setExporting = useAppStore((state) => state.setExporting);
+  const setExportProgress = useAppStore((state) => state.setExportProgress);
+  const addToExportHistory = useAppStore((state) => state.addToExportHistory);
+  const clearExportHistory = useAppStore((state) => state.clearExportHistory);
+  const updateExportPreferences = useAppStore((state) => state.updateExportPreferences);
+  const setLastExportSettings = useAppStore((state) => state.setLastExportSettings);
+
+  return {
+    exportHistory,
+    isExporting,
+    exportProgress,
+    exportPreferences,
+    lastExportSettings,
+    setExporting,
+    setExportProgress,
+    addToExportHistory,
+    clearExportHistory,
+    updateExportPreferences,
+    setLastExportSettings,
   };
 };
 
