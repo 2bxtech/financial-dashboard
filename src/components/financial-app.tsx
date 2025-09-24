@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import FileUploader from './file-uploader';
 import DataPreview from './data-preview';
@@ -9,6 +9,7 @@ import ErrorDisplay from './error-display';
 import LoadingState from './loading-state';
 import { UndoRedoControls } from './undo-redo-controls';
 import { StoreDemo } from './store-demo';
+import { ExportControls } from './export-controls';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { fileProcessingService } from '../services/file-processing.service';
 import { dataProcessingService } from '../services/data-processing.service';
@@ -38,6 +39,10 @@ import { CommandHelpers } from '../store/index';
 
 const FinancialApp: React.FC = () => {
   const [showStoreDemo, setShowStoreDemo] = useState(false);
+  
+  // Refs for export functionality
+  const revenueChartRef = useRef<HTMLDivElement>(null);
+  const profitChartRef = useRef<HTMLDivElement>(null);
 
   // Enable keyboard shortcuts for undo/redo
   useKeyboardShortcuts({
@@ -263,10 +268,21 @@ const FinancialApp: React.FC = () => {
       {chartData && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <RevenueChart data={chartData} />
-            <ProfitChart data={chartData} />
+            <div ref={revenueChartRef}>
+              <RevenueChart data={chartData} />
+            </div>
+            <div ref={profitChartRef}>
+              <ProfitChart data={chartData} />
+            </div>
           </div>
           {dashboardLayout.showTrendMetrics && trends && <TrendMetrics trends={trends} />}
+          
+          {/* Export Controls */}
+          <ExportControls 
+            revenueChartRef={revenueChartRef}
+            profitChartRef={profitChartRef}
+            className="mt-6"
+          />
         </>
       )}
       

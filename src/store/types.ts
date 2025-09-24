@@ -1,6 +1,7 @@
 import { FinancialData, TrendMetricsData, ChartDataPoint } from '../types';
 import { AppError } from '../utils/error-handling';
 import { CircuitState } from '../utils/circuit-breaker';
+import { ExportResult, ExportFormat } from '../services/interfaces/IExportService';
 
 // Command pattern for undo/redo functionality
 export interface Command {
@@ -161,6 +162,44 @@ export interface FileComparisonSlice {
   clearAllComparisons: () => void;
 }
 
+// Export store slice
+export interface ExportSlice {
+  exportHistory: ExportResult[];
+  isExporting: boolean;
+  exportProgress: {
+    current: number;
+    total: number;
+    status: string;
+  } | null;
+  exportPreferences: {
+    defaultFormat: ExportFormat;
+    includeHeaders: boolean;
+    dateFormat: string;
+    numberFormat: 'decimal' | 'currency';
+    quality: number;
+    includeCharts: boolean;
+    includeRawData: boolean;
+    companyInfo: {
+      name: string;
+      logo?: string;
+      address: string;
+    };
+  };
+  lastExportSettings: {
+    format?: ExportFormat;
+    template?: string;
+    options?: Record<string, any>;
+  };
+  
+  // Actions
+  setExporting: (isExporting: boolean) => void;
+  setExportProgress: (progress: ExportSlice['exportProgress']) => void;
+  addToExportHistory: (result: ExportResult) => void;
+  clearExportHistory: () => void;
+  updateExportPreferences: (prefs: Partial<ExportSlice['exportPreferences']>) => void;
+  setLastExportSettings: (settings: ExportSlice['lastExportSettings']) => void;
+}
+
 // Combined store type
 export interface AppStore 
   extends FinancialDataSlice,
@@ -169,7 +208,8 @@ export interface AppStore
     ProcessingMetricsSlice,
     UndoRedoSlice,
     UserPreferencesSlice,
-    FileComparisonSlice {}
+    FileComparisonSlice,
+    ExportSlice {}
 
 // Persistence configuration
 export interface PersistenceConfig {
