@@ -1,11 +1,10 @@
 # 📊 Financial Dashboard
 
-> A financial data visualization tool built with React and TypeScript. Upload CSV or Excel files to see charts and basic financial metrics.
+> A comprehensive financial data analysis and reporting tool built with React and TypeScript. Upload CSV or Excel files to generate charts, analyze financial metrics, and export professional reports.
 
-[![Tests](https://img.shields.io/badge/tests-195%2F195%20passing-brightgreen)](https://github.com/2bxtech/financial-dashboard)
+[![Tests](https://img.shields.io/badge/tests-213%2F213%20passing-brightgreen)](https://github.com/2bxtech/financial-dashboard)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb)](https://reactjs.org/)
-[![Zustand](https://img.shields.io/badge/State-Zustand-orange)](https://zustand-demo.pmnd.rs/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## 🚀 Quick Start
@@ -32,31 +31,38 @@ The application will be available at `http://localhost:5173/`
 
 ## 📋 Overview
 
-A web application that processes CSV and Excel files to generate financial charts and basic metrics. Built with React, TypeScript, and Zustand for state management. Features include undo/redo functionality, chart customization, dark mode support, and client-side data processing for privacy.
+A web application that processes CSV and Excel files to generate financial charts, analyze metrics, and export professional reports. Built with React, TypeScript, and Zustand for state management. Features include comprehensive export functionality, undo/redo operations, chart customization, dark mode support, and client-side data processing for privacy.
 
 ## 📱 Screenshots
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/2d95d7f4-4d02-4f61-b733-cb1d6bfa5505" />
+* Screenshots available in the [`screenshots/`](screenshots/) directory*
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/d6cba9a0-b72d-44b1-b37f-6f238ee444d0" />
+<img width="1920" height="1080" alt="dashboard-light-lines-part1-top" src="https://github.com/user-attachments/assets/14b004e2-5cac-4615-8155-e5e3ccaa2d22" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bbe0c873-db93-4741-b59e-2ed4dbadad4b" />
+<img width="1920" height="1080" alt="dashboard-light-lines-part2-middle" src="https://github.com/user-attachments/assets/fe0fcf6b-6533-41ae-8404-cf547c5d2e3d" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/169160b1-068a-4486-8edc-1779b6888e33" />
+<img width="1920" height="1080" alt="dashboard-light-lines-part3-bottom" src="https://github.com/user-attachments/assets/614c2b95-cf89-4008-823b-a5a469bf8c91" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/80aa1869-8a5d-450a-8b8a-ebe2cd4b1b56" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/913eaef8-e050-410c-9ad7-33b1a85eb366" />
+<img width="1920" height="945" alt="dashboard-light-area-part1-top" src="https://github.com/user-attachments/assets/a61a86a8-f665-40e2-9dce-3acc66898351" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/490bc14f-3c37-4e1f-8dbe-cb612cf0059e" />
+<img width="1920" height="945" alt="dashboard-light-area-part2-middle" src="https://github.com/user-attachments/assets/c520f189-769f-4051-b3ec-8a2efab6fdcb" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/00e29f79-2624-473b-b0a8-f98fef2c8aa9" />
+<img width="1920" height="945" alt="dashboard-light-area-part3-bottom" src="https://github.com/user-attachments/assets/eeb56461-123d-4bcd-ade4-09430ae823d6" />
 
-<img width="1920" height="945" alt="Financial Dashboard Screenshot" src="https://github.com/user-attachments/assets/bc3c04a0-b6cf-4d7a-941c-c2759df6a1b4" />
+
+<img width="1920" height="1080" alt="dashboard-dark-bars-part1-top" src="https://github.com/user-attachments/assets/3facf283-8116-44ae-89a4-54f443d85d5d" />
+
+<img width="1920" height="1080" alt="dashboard-dark-bars-part2-middle" src="https://github.com/user-attachments/assets/3ec79417-a759-4380-947d-64d640a51e8d" />
+
+<img width="1920" height="1080" alt="dashboard-dark-bars-part3-bottom" src="https://github.com/user-attachments/assets/f058577d-9478-4bef-acb7-6f46b6bb8063" />
+
 
 ### 🎯 Key Features
 
 - Drag-and-drop file upload interface
+- Comprehensive export system (CSV, Excel, PNG, PDF reports)
+- Professional PDF report generation with embedded charts
 - Chart settings update components in real-time
 - Undo/redo operations with keyboard shortcuts
 - Dark mode with accessible color contrast
@@ -78,8 +84,18 @@ A web application that processes CSV and Excel files to generate financial chart
 - Revenue consistency and expense pattern analysis
 - Dark mode chart rendering with appropriate color schemes
 
+### 📊 Export & Reporting
+- Multi-format data export (CSV, Excel) with complete dataset preservation
+- Professional PDF report generation with two templates (Executive Summary, Detailed Analysis)
+- Chart image exports (PNG) with theme-aware rendering
+- Export settings configuration and history tracking
+- Real-time export progress indicators
+- Client-side processing maintaining zero server dependencies
+
 ### 🔧 Technical Features
 - CSV and Excel (.xlsx) file parsing with validation
+- Multi-format export system with data integrity validation
+- PDF report generation with embedded chart screenshots
 - Input validation with error messages
 - Circuit breaker pattern for error handling
 - TypeScript for type safety
@@ -151,6 +167,12 @@ The application follows standard React patterns with TypeScript:
 │  │ • Excel Parser   │  │  • Validation Logic            │  │
 │  │ • Factory Pattern│  │  • Business Intelligence       │  │
 │  └──────────────────┘  └─────────────────────────────────┘  │
+│  ┌──────────────────┐  ┌─────────────────────────────────┐  │
+│  │ Export Service   │  │  Report Generation Service      │  │
+│  │ • Multi-format   │  │  • PDF Report Creation          │  │
+│  │ • Chart Capture  │  │  • Template Management         │  │
+│  │ • Data Export    │  │  • Chart Embedding             │  │
+│  └──────────────────┘  └─────────────────────────────────┘  │
 └─────────────────────┬───────────────────────────────────────┘
                       │
 ┌─────────────────────┴───────────────────────────────────────┐
@@ -185,8 +207,14 @@ The application follows standard React patterns with TypeScript:
 - **Recharts**: Powerful charting library with interactive visualizations
 - **Lodash**: Utility functions for efficient data manipulation
 
+#### Export & Reporting
+- **@react-pdf/renderer**: Professional PDF report generation
+- **html2canvas**: Chart screenshot capture for embedded images
+- **file-saver**: Cross-browser file download management
+- **xlsx**: Excel format export functionality
+
 #### Quality & Testing
-- **Jest**: Comprehensive testing framework (195/195 tests passing)
+- **Jest**: Comprehensive testing framework (213/213 tests passing)
 - **Testing Library**: React component testing with accessibility focus
 - **ESLint**: Code quality and consistency enforcement
 - **TypeScript Strict Mode**: Enhanced type safety with zero any types
@@ -215,6 +243,9 @@ src/
 │   ├── profit-chart.tsx     # Profit chart with live settings integration
 │   ├── trend-metrics.tsx    # Metrics display with dark mode support
 │   ├── file-uploader.tsx    # File upload with enhanced UI
+│   ├── export-controls.tsx  # Export functionality UI
+│   ├── export-settings-dialog.tsx # Export configuration
+│   ├── export-history-dialog.tsx # Export history tracking
 │   └── __tests__/       # Component tests (comprehensive coverage)
 ├── store/               # Zustand state management
 │   ├── index.ts         # Main store with individual selectors
@@ -226,13 +257,17 @@ src/
 ├── services/            # Business logic layer
 │   ├── interfaces/      # Service contracts
 │   │   ├── IDataProcessingService.ts
-│   │   └── IFileParser.ts
+│   │   ├── IFileParser.ts
+│   │   ├── IExportService.ts
+│   │   └── IReportGenerationService.ts
 │   ├── parsers/         # File format implementations
 │   │   ├── csv-parser.ts
 │   │   ├── excel-parser.ts
 │   │   └── file-parser-factory.ts
 │   ├── data-processing.service.ts
-│   └── file-processing.service.ts
+│   ├── file-processing.service.ts
+│   ├── export.service.ts
+│   └── report-generation.service.ts
 ├── utils/               # Infrastructure utilities
 │   ├── circuit-breaker.ts   # Fault tolerance
 │   ├── error-handling.ts    # Structured error system
@@ -409,8 +444,8 @@ Financial calculations and metrics:
 ### Test Coverage
 ```
 ✅ Test Suites: 12 passed, 12 total
-✅ Tests: 195 passed, 195 total  
-✅ Coverage: Comprehensive coverage including store functionality
+✅ Tests: 213 passed, 213 total  
+✅ Coverage: Comprehensive coverage, including store and export functionality
 ```
 
 ### Test Categories
@@ -418,8 +453,9 @@ Financial calculations and metrics:
 - **Integration Tests**: Component interactions, data flow, store operations
 - **UI Tests**: User interactions, error states, loading states  
 - **Store Tests**: Zustand store functionality, persistence, undo/redo
+- **Export Tests**: Export service functionality, PDF generation, data integrity
 - **Performance Tests**: Re-render optimization, memory management
-- **E2E Tests**: Complete file processing workflows
+- **E2E Tests**: Complete file processing and export workflows
 
 ### Running Tests
 ```bash
@@ -440,6 +476,7 @@ The repository includes test data for trying out the application:
 - **`sample-data.csv`**: Basic revenue/expense data (20 entries)
 - **`sample-data-detailed.csv`**: More complex data with categories (60 entries)
 - **`sample-financial-data.xlsx`**: Excel format example
+- **`sample-exports/`**: Directory with sample export outputs (CSV, Excel, PDF, PNG)
 
 ### Expected Data Format
 
@@ -497,24 +534,11 @@ Date,Revenue,Expenses,Department,Region,Product Category
 
 ## 🔮 Future Plans
 
-### Next Features
-- [ ] Export charts as images or PDFs with settings persistence
-- [ ] Advanced analytics dashboard with performance metrics
-- [ ] Plugin architecture for custom calculations and chart types
-- [ ] Multi-file comparison with visual diff tools and enhanced UI
-- [ ] Real-time collaboration features with shared workspaces
-- [ ] API integration with automatic sync and external data sources
-- [ ] Enhanced keyboard shortcuts for power users
-- [ ] Custom chart themes and color schemes
-- [ ] Advanced data filtering and search capabilities
-
-### Possible Improvements
-- [ ] Enhanced data export functionality with format options
-- [ ] Time period comparison with historical analysis
-- [ ] Integration with external financial APIs
-- [ ] Custom dashboard layouts with drag-and-drop
-- [ ] Advanced filtering and search capabilities
-- [ ] Batch file processing with progress tracking
+### Potential Improvements
+- [ ] Basic forecasting with linear regression
+- [ ] Additional chart types and customization
+- [ ] Enhanced data filtering and search
+- [ ] Batch file processing capabilities
 
 
 ### Development Setup
@@ -537,7 +561,7 @@ npm test
 ```
 
 ### Code Standards
-- TypeScript required for all new code
+- TypeScript is required for all new code
 - Include tests for new features
 - Update documentation for changes
 - Code must pass ESLint checks
@@ -547,10 +571,13 @@ npm test
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ## 🙏 Acknowledgments
 
-- React Team for the framework
+- React Team for the library
 - TypeScript Team for static type safety
 - Vite Team for build tools
 - Tailwind CSS for utility-first styling
 - Shadcn for accessible components
+- Zustand for lightweight state management
+- Recharts for powerful data visualization
+- @react-pdf/renderer for PDF generation capabilities
 
 ---
