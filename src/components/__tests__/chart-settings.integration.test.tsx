@@ -44,9 +44,17 @@ jest.mock('../../store', () => {
     animationDuration: 300,
   };
 
+  const mockPreferences = {
+    theme: 'light' as 'light' | 'dark',
+    autoSave: true,
+    showNotifications: true,
+  };
+
   return {
     useChartSettings: jest.fn(() => mockChartSettings),
+    usePreferences: jest.fn(() => mockPreferences),
     mockChartSettings, // Export for test access
+    mockPreferences, // Export for test access
   };
 });
 

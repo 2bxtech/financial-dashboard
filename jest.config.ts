@@ -4,6 +4,11 @@ import { compilerOptions } from './tsconfig.paths.json';
 export default {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  
+  // Minimal output configuration
+  verbose: false,
+  silent: false, // Keep false to see errors, set true for complete silence
+  
   transform: {
     "^.+\\.(ts|tsx|js|jsx)$": "babel-jest"  // Use babel-jest for all TypeScript and JavaScript files
   },
@@ -14,7 +19,7 @@ export default {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],  // Setup file for additional Jest configurations
   transformIgnorePatterns: [
-    "node_modules/(?!@babel|lodash-es|exceljs|uuid)"  // Transform ES modules from node_modules if needed
+    "node_modules/(?!@babel|lodash-es|exceljs|uuid|@react-pdf)"  // Transform ES modules from node_modules if needed
   ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],  // Supported extensions
   globals: {

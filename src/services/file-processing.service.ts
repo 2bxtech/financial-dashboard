@@ -171,7 +171,8 @@ class FileProcessingService {
     // Process data into required formats using data processing service
     const processedData: FinancialData = {
       headers: parseResult.meta.fields || [],
-      rows: parseResult.data.slice(0, 5),
+      rows: parseResult.data.slice(0, 5), // Preview rows for UI
+      fullRows: parseResult.data, // Complete dataset for exports
       totalRows: parseResult.data.length
     };
 

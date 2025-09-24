@@ -2,7 +2,7 @@
 
 > A financial data visualization tool built with React and TypeScript. Upload CSV or Excel files to see charts and basic financial metrics.
 
-[![Tests](https://img.shields.io/badge/tests-59%2F59%20passing-brightgreen)](https://github.com/2bxtech/financial-dashboard)
+[![Tests](https://img.shields.io/badge/tests-195%2F195%20passing-brightgreen)](https://github.com/2bxtech/financial-dashboard)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61dafb)](https://reactjs.org/)
 [![Zustand](https://img.shields.io/badge/State-Zustand-orange)](https://zustand-demo.pmnd.rs/)
